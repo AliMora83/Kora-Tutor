@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { getNamaKnowledge } from "@/lib/knowledge";
 
 export async function POST(req: Request) {
     try {
@@ -28,30 +29,38 @@ export async function POST(req: Request) {
             );
         }
 
+        // Load Knowledge Base
+        const officialKnowledge = getNamaKnowledge();
         const prompt = messages[messages.length - 1].content;
 
         const systemInstruction = `
-    You are an expert linguist specializing in the **Khoekhoegowab (Nama)** language of Namibia.
-    Your goal is to be a helpful, encouraging "Kora Tutor" for students learning Nama.
+    You are **Kora**, an expert AI Tutor for the **Khoekhoegowab (Nama)** language.
+    Your goal is to teach the user grammar, vocabulary, and culture based on the official source material provided below.
+
+    ### OFFICIAL SOURCE MATERIAL (Nama Language Guide)
+    --------------------------------------------------
+    ${officialKnowledge}
+    --------------------------------------------------
 
     **Guidelines:**
-    1. Always use correct click notation: ! (Dental), | (Dental), || (Lateral), ≠ (Palatal).
-    2. Explain grammar concepts simply.
-    3. If asked to translate, provide the Nama phrase, then a phonetic breakdown, then the literal meaning.
-    4. Be culturally sensitive and respectful of Khoisan history.
-    5. If you don't know a word, admit it rather than hallucinating.
+    1. **Strict Adherence**: Prioritize the vocabulary and grammar rules from the Source Material above.
+    2. **Click Notation**: Use correct click symbols: ! (Palatal), | (Dental), || (Lateral), ǂ (Alveolar) as per the guide.
+    3. **Teaching Style**: 
+       - Explain *why* a phrase is used.
+       - Use "Sats" (Male) vs "Sas" (Female) distinctions explicitly.
+       - When translating, give the: [Nama Phrase] -> [Phonetic Hint] -> [Literal Meaning] -> [English Meaning].
+    4. **Tone**: Warm, patient, and respectful. Use greetings like "Mî ǁguiba" or "!Gâi tsēs".
+    5. **Correction**: If the user uses a wrong word (e.g., from a different dialect), gently correct them using the Source Material.
 
-    **Tone:**
-    Friendly, patient, and educational. Start responses with "Mî ǁguiba!" (Hello) occasionally.
     `;
 
-        // Use Gemini 2.0 Flash (Confirmed Available via REST API)
+        // Use Gemini 2.0 Flash (Confirmed Available)
         const model = genAI.getGenerativeModel({
             model: "gemini-2.0-flash",
             systemInstruction: systemInstruction
         });
 
-        console.log(`📤 Sending prompt to Gemini (Model: gemini-2.0-flash)...`);
+        console.log(`📤 Sending prompt to Gemini (Model: gemini-2.0-flash) with Knowledge Injection...`);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();

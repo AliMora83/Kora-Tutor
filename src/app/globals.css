@@ -1,72 +1,66 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #fbbf24;
-  --color-secondary: #14b8a6;
-  --color-accent: #f97316;
-  --color-background: #0f172a;
-  --color-foreground: #f8fafc;
+  --font-geist-sans: "Geist", sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
+
+  --color-background: #0f0f0f;
+  --color-foreground: #ededed;
+  --color-primary: #14b8a6;
+  --color-secondary: #f59e0b;
 }
 
-:root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-
-  --primary: #fbbf24;
-  --secondary: #14b8a6;
-  --accent: #f97316;
-
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Custom Utilities */
-.text-gradient {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 1rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-.glass-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary);
-}
-
-/* Animations */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-
-  100% {
-    transform: translateY(0px);
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-geist-sans);
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@layer utilities {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Custom Scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* Hide Next.js Dev Tools Indicator */
+  [data-nextjs-toast] {
+    display: none !important;
+  }
+
+  /* Additional catch-alls for dev indicators */
+  nextjs-portal {
+    display: none !important;
+  }
 }
