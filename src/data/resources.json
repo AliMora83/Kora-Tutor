@@ -1,0 +1,63 @@
+{
+    "meta": {
+        "project": "Nama AI Agent",
+        "version": "1.0",
+        "last_updated": "2026-02-03"
+    },
+    "resources": [
+        {
+            "id": "adults_tv_003_bradlox",
+            "category": "Culture",
+            "type": "YouTube Channel",
+            "title": "Bradlox - Nama Learning Content",
+            "url": "https://www.youtube.com/@Bradlox",
+            "notes": "User requested source. Likely contains language lessons.",
+            "status": "identified"
+        },
+        {
+            "id": "history_001",
+            "category": "History",
+            "type": "Web Article",
+            "title": "IOL - Khoisan Tag",
+            "url": "https://iol.co.za/tags/khoisan/",
+            "notes": "News and articles tagged with Khoisan.",
+            "status": "identified"
+        },
+        {
+            "id": "history_002",
+            "category": "History",
+            "type": "Web Article",
+            "title": "The Conversation - Khoisan Topics",
+            "url": "https://theconversation.com/topics/khoisan-24304",
+            "notes": "Academic and journalistic articles about Khoisan people.",
+            "status": "identified"
+        },
+        {
+            "id": "history_003",
+            "category": "History",
+            "type": "Web Article",
+            "title": "SA History Online - Khoisan",
+            "url": "https://sahistory.org.za/article/khoisan",
+            "notes": "Detailed historical overview.",
+            "status": "identified"
+        },
+        {
+            "id": "history_004",
+            "category": "History",
+            "type": "Web Article",
+            "title": "Museums of South Africa - Eastern Cape Khoisan",
+            "url": "https://museum.za.net/the-khoisan-of-the-eastern-cape/",
+            "notes": "Regional historical context.",
+            "status": "identified"
+        },
+        {
+            "id": "research_001",
+            "category": "Research",
+            "type": "NotebookLM",
+            "title": "User NotebookLM Source",
+            "url": "https://notebooklm.google.com/notebook/16675b40-275f-4f04-a55b-f967be136796",
+            "notes": "Requires manual export. Contains user-compiled research.",
+            "status": "manual_review"
+        }
+    ]
+}
