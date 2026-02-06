@@ -4,13 +4,13 @@ import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBonLDyZbxVuRA0nSqw7aQKA0hae8Z34Ug",
-    authDomain: "nama-language.firebaseapp.com",
-    databaseURL: "https://nama-language-default-rtdb.firebaseio.com",
-    projectId: "nama-language",
-    storageBucket: "nama-language.firebasestorage.app",
-    messagingSenderId: "409379522175",
-    appId: "1:409379522175:web:246fd2e7dce3298f22214a"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 // Initialize Firebase

@@ -59,3 +59,4 @@
     - [x] **Migration**: Moved project to `/Users/alikora/dev/AntiG/Nama Language` and committed to git.
     - [x] **Persistence**: Google Sign-In, Chat History, Save & Chat.
     - [x] **Refactor**: Linting cleanup, type safety, optimization.
+    - [x] **Security**: Secured Firebase config in `.env.local` and added `firestore.rules`.
