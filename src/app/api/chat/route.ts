@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         }
 
         // Load Knowledge Base
-        const officialKnowledge = getNamaKnowledge();
+        const officialKnowledge = await getNamaKnowledge();
         const prompt = messages[messages.length - 1].content;
 
         const systemInstruction = `
@@ -67,10 +67,10 @@ export async function POST(req: Request) {
         console.log("mn📥 Received response from Gemini.");
 
         return NextResponse.json({ role: 'assistant', content: text });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("🔥 Gemini API Fatal Error:", error);
         return NextResponse.json(
-            { role: 'assistant', content: `API Error: ${error.message || "Unknown error"}` },
+            { role: 'assistant', content: `API Error: ${(error as Error).message || "Unknown error"}` },
             { status: 500 }
         );
     }

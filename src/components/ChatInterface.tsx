@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Send } from 'lucide-react';
+import AuthButton from './AuthButton';
 
 export type Message = {
     role: 'user' | 'assistant';
@@ -30,11 +31,11 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
         <div className="h-[calc(100dvh-4rem)] md:h-screen flex flex-col relative">
             {/* Header - Minimal */}
             <header className="p-4 flex justify-between items-center text-gray-500 text-sm border-b border-white/5">
-                <span>Kora 2.0 Flash</span>
                 <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span>Online</span>
+                    <span className="font-semibold text-white">Kora 2.0 Flash</span>
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse my-auto"></span>
                 </div>
+                <AuthButton />
             </header>
 
             {/* Messages */}

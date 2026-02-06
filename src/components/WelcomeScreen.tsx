@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { MoveRight } from 'lucide-react';
+import AuthButton from './AuthButton';
 
 interface WelcomeScreenProps {
     input: string;
@@ -11,7 +12,11 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ input, setInput, handleSend, isLoading }: WelcomeScreenProps) {
     return (
-        <div className="h-[calc(100dvh-4rem)] md:h-screen flex flex-col items-center justify-center p-4 max-w-3xl mx-auto">
+        <div className="h-[calc(100dvh-4rem)] md:h-screen flex flex-col items-center justify-center p-4 max-w-3xl mx-auto relative">
+            <div className="absolute top-4 right-4">
+                <AuthButton />
+            </div>
+
             {/* Greeting */}
             <div className="text-center mb-12 animate-fade-in-up">
                 <div className="flex justify-center mb-6">

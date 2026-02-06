@@ -33,11 +33,12 @@ export default function AITutorPage() {
                 // Throw specific error from backend
                 throw new Error(data.content || 'API Error');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Chat Error:", error);
+            const err = error as Error;
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: `⚠️ ${error.message || "Connection Error. Please check console."}`
+                content: `⚠️ ${err.message || "Connection Error. Please check console."}`
             }]);
         } finally {
             setIsLoading(false);

@@ -1,0 +1,36 @@
+
+> nama-app@0.1.0 lint
+> eslint
+
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/ai-tutor/page.tsx
+  36:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/api/chat/route.ts
+  70:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/api/generate-script/route.ts
+  82:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/generators/adults/page.tsx
+   7:15  warning  'updateDoc' is defined but never used                            @typescript-eslint/no-unused-vars
+  81:40  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  81:55  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/generators/kids/page.tsx
+    7:15  warning  'updateDoc' is defined but never used                            @typescript-eslint/no-unused-vars
+   78:29  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   81:28  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  114:46  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/page.tsx
+    9:31  warning  'updateDoc' is defined but never used     @typescript-eslint/no-unused-vars
+  108:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/alikora/dev/AntiG/Nama Language/src/app/progress/page.tsx
+   6:24  warning  'BookOpen' is defined but never used                                                            @typescript-eslint/no-unused-vars
+  14:9   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+✖ 14 problems (9 errors, 5 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
