@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, Library, BarChart2, Settings, Tv, Backpack } from 'lucide-react';
+import { MessageSquare, BarChart2, Settings, Tv, Backpack } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -50,12 +50,7 @@ export default function Sidebar() {
                     label="Kids Mode"
                     active={isActive('/generators/kids')}
                 />
-                <NavItem
-                    href="/resources"
-                    icon={<Library size={20} />}
-                    label="Resources"
-                    active={isActive('/resources')}
-                />
+
                 <NavItem
                     href="/progress"
                     icon={<BarChart2 size={20} />}

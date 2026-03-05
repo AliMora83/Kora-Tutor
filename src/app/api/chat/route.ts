@@ -56,11 +56,11 @@ export async function POST(req: Request) {
 
         // Use Gemini 2.0 Flash (Confirmed Available)
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             systemInstruction: systemInstruction
         });
 
-        console.log(`📤 Sending prompt to Gemini (Model: gemini-2.0-flash) with Knowledge Injection...`);
+        console.log(`📤 Sending prompt to Gemini (Model: gemini-2.5-flash) with Knowledge Injection...`);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
