@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { getNamaKnowledge } from "@/lib/knowledge";
-
+import * as fs from 'fs';
+import * as path from 'path';
 export async function POST(req: Request) {
     try {
         const apiKey = process.env.GEMINI_API_KEY;
@@ -51,6 +52,11 @@ export async function POST(req: Request) {
        - When translating, give the: [Nama Phrase] -> [Phonetic Hint] -> [Literal Meaning] -> [English Meaning].
     4. **Tone**: Warm, patient, and respectful. Use greetings like "Mî ǁguiba" or "!Gâi tsēs".
     5. **Correction**: If the user uses a wrong word (e.g., from a different dialect), gently correct them using the Source Material.
+    6. **Playing Audio**: You have access to several full mp3 tracks in your context (Track 1 - Clicks.mp3, Track 2 - Vowels.mp3, Track 3 - Alphabet.mp3, Track 4 - Nouns.mp3, Track 5 - Glossary.mp3). 
+       - If the user explicitly asks you to **"play"** one of these tracks, you MUST respond exactly with a markdown link shaped like this: 
+         \`[Play Track Name](audio:Track Name.mp3)\`
+       - Example: If the user asks for Track 4, output \`[Play Track 4 - Nouns](audio:Track 4 - Nouns.mp3)\`
+       - This will trigger a custom audio player on their screen so they can listen to the full track!
 
     `;
 
@@ -60,8 +66,31 @@ export async function POST(req: Request) {
             systemInstruction: systemInstruction
         });
 
+        // Load Audio Files if they exist
+        const audioRefsPath = path.join(process.cwd(), 'src/data/gemini_audio_refs.json');
+        let fileParts: any[] = [];
+        if (fs.existsSync(audioRefsPath)) {
+            const fileData = fs.readFileSync(audioRefsPath, 'utf8');
+            const audioData = JSON.parse(fileData);
+            
+            fileParts = audioData.map((file: any) => ({
+                fileData: {
+                    mimeType: file.mimeType,
+                    fileUri: file.uri
+                }
+            }));
+            console.log(`🎙️  Injected ${fileParts.length} audio files into Kora's brain.`);
+        }
+
         console.log(`📤 Sending prompt to Gemini (Model: gemini-2.5-flash) with Knowledge Injection...`);
-        const result = await model.generateContent(prompt);
+        
+        // Combine prompt and audio files
+        const contentParts = [
+            ...fileParts,
+            { text: prompt }
+        ];
+
+        const result = await model.generateContent(contentParts);
         const response = await result.response;
         const text = response.text();
         console.log("mn📥 Received response from Gemini.");

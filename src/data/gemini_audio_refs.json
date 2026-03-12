@@ -1,0 +1,32 @@
+[
+  {
+    "name": "training_audio/1773339752981_Track_6_-_Foreign_words.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/sjo8ctebubil",
+    "mimeType": "audio/mp3"
+  },
+  {
+    "name": "training_audio/Track 1 - Clicks.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/jl15npni69xz",
+    "mimeType": "audio/mp3"
+  },
+  {
+    "name": "training_audio/Track 2 - Vowels.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/alkp1ywsx498",
+    "mimeType": "audio/mp3"
+  },
+  {
+    "name": "training_audio/Track 3 - Alphabet.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/xkkjl35e2f5g",
+    "mimeType": "audio/mp3"
+  },
+  {
+    "name": "training_audio/Track 4 - Nouns.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8ci1lnsv3hb4",
+    "mimeType": "audio/mp3"
+  },
+  {
+    "name": "training_audio/Track 5 - Glossary.mp3",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/set5jqswbh4y",
+    "mimeType": "audio/mp3"
+  }
+]

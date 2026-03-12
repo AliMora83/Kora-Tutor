@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, BarChart2, Settings, Tv, Backpack } from 'lucide-react';
+import { MessageSquare, BarChart2, Settings, UploadCloud } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -38,24 +38,19 @@ export default function Sidebar() {
                     label="Chat"
                     active={isActive('/')}
                 />
-                <NavItem
-                    href="/generators/adults"
-                    icon={<Tv size={20} />}
-                    label="Simpsons Mode"
-                    active={isActive('/generators/adults')}
-                />
-                <NavItem
-                    href="/generators/kids"
-                    icon={<Backpack size={20} />}
-                    label="Kids Mode"
-                    active={isActive('/generators/kids')}
-                />
 
                 <NavItem
                     href="/progress"
                     icon={<BarChart2 size={20} />}
                     label="Progress"
                     active={isActive('/progress')}
+                />
+
+                <NavItem
+                    href="/upload"
+                    icon={<UploadCloud size={20} />}
+                    label="Audio Training"
+                    active={isActive('/upload')}
                 />
 
                 {/* Spacer pushes settings to bottom on desktop */}

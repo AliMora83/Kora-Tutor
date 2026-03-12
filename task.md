@@ -42,9 +42,20 @@
     - [x] Enable Chat History Persistence (Firestore) <!-- id: 31 -->
     - [x] Add "Save & Chat" to Generators <!-- id: 32 -->
 
-- [ ] **Data Processing Phase**
+- [x] **Data Processing Phase**
     - [x] Structure collected data for translation purposes <!-- id: 4 -->
     - [x] Finalize "Nama Language Translation" dataset artifact <!-- id: 5 -->
+
+- [ ] **Phase 2 Pipeline (New Features)**
+    - [ ] **Repurpose Generators**: Adapt Script Generator API for daily vocabulary quizzes or flashcards <!-- id: 25 -->
+    - [ ] **Audio / Pronunciation Support**
+        - [ ] Research Text-to-Speech (TTS) API for click consonants <!-- id: 26a -->
+        - [ ] Add "Play Audio" button to chat tables/vocabulary <!-- id: 26b -->
+        - [ ] Implement Speech-to-Text testing for user pronunciation (Whisper model) <!-- id: 26c -->
+    - [ ] **Progress Dashboard Expansion**
+        - [ ] Track consecutive daily chat streaks <!-- id: 28a -->
+        - [ ] Track number of messages sent in Nama <!-- id: 28b -->
+        - [ ] Build visual charts for vocabulary/grammar mastery based on chat history <!-- id: 28c -->
 
 - [x] **Verification & Delivery**
     - [x] Review report with user <!-- id: 6 -->

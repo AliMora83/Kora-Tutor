@@ -116,6 +116,21 @@ export default function HomePage() {
     }
   };
 
+  const handleNewChat = () => {
+    setMessages([]);
+    setHasStarted(false);
+  };
+
+  const handleDeleteChat = async () => {
+    if (user) {
+      const chatRef = doc(db, 'users', user.uid, 'chats', 'default');
+      await setDoc(chatRef, { messages: [] }, { merge: true });
+    }
+    setMessages([]);
+    setHasStarted(false);
+    showToast("Chat history deleted");
+  };
+
   // --- EMPTY STATE (Claude/Gemini Welcome) ---
   if (!hasStarted) {
     return (
@@ -137,6 +152,8 @@ export default function HomePage() {
         setInput={setInput}
         handleSend={handleSend}
         isLoading={isLoading}
+        onNewChat={handleNewChat}
+        onDeleteChat={handleDeleteChat}
       />
 
       {/* Success Toast */}
