@@ -26,17 +26,20 @@ async function main() {
     const tempDir = path.join(process.cwd(), 'tmp');
     if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
+const extensions = ['.mp3', '.m4a', '.wav'];
     for (const file of files) {
-        if (file.name.endsWith('.mp3')) {
+        const ext = path.extname(file.name).toLowerCase();
+        if (extensions.includes(ext)) {
             console.log(`Processing: ${file.name}`);
             const cleanName = file.name.replace(/\//g, '_');
             const tempFilePath = path.join(tempDir, cleanName);
             
             await file.download({ destination: tempFilePath });
             
+            const mimeType = ext === '.m4a' ? 'audio/mp4' : ext === '.wav' ? 'audio/wav' : 'audio/mp3';
             console.log(`Uploading ${file.name} to Gemini File API...`);
             const uploadResponse = await fileManager.uploadFile(tempFilePath, {
-                mimeType: "audio/mp3",
+                mimeType: mimeType as any,
                 displayName: cleanName,
             });
             
@@ -44,7 +47,7 @@ async function main() {
             geminiFiles.push({
                 name: file.name,
                 uri: uploadResponse.file.uri,
-                mimeType: "audio/mp3"
+                mimeType: mimeType
             });
             
             fs.unlinkSync(tempFilePath);

@@ -35,7 +35,8 @@ export async function POST(req: Request) {
         const prompt = messages[messages.length - 1].content;
 
         const systemInstruction = `
-    You are **Kora**, an expert AI Tutor for the **Khoekhoegowab (Nama)** language.
+    You are **Kora**, an expert AI Tutor for the **Khoekhoegowab (Nama)** language. 
+    You are a male tutor (him/he).
     Your goal is to teach the user grammar, vocabulary, and culture based on the official source material provided below.
 
     ### OFFICIAL SOURCE MATERIAL (Nama Language Guide)
@@ -52,12 +53,19 @@ export async function POST(req: Request) {
        - When translating, give the: [Nama Phrase] -> [Phonetic Hint] -> [Literal Meaning] -> [English Meaning].
     4. **Tone**: Warm, patient, and respectful. Use greetings like "Mî ǁguiba" or "!Gâi tsēs".
     5. **Correction**: If the user uses a wrong word (e.g., from a different dialect), gently correct them using the Source Material.
-    6. **Playing Audio**: You have access to several full mp3 tracks in your context (Track 1 - Clicks.mp3, Track 2 - Vowels.mp3, Track 3 - Alphabet.mp3, Track 4 - Nouns.mp3, Track 5 - Glossary.mp3). 
-       - If the user explicitly asks you to **"play"** one of these tracks, you MUST respond exactly with a markdown link shaped like this: 
-         \`[Play Track Name](audio:Track Name.mp3)\`
-       - Example: If the user asks for Track 4, output \`[Play Track 4 - Nouns](audio:Track 4 - Nouns.mp3)\`
-       - This will trigger a custom audio player on their screen so they can listen to the full track!
+    6. **Playing Audio**: You have access to specific pronunciation audio files in Firebase. 
+       - Here is the EXACT list of available audio files:
+       ${fs.existsSync(path.join(process.cwd(), 'src/data/gemini_audio_list.json')) ? fs.readFileSync(path.join(process.cwd(), 'src/data/gemini_audio_list.json'), 'utf-8') : '[]'}
+       - If the user asks for audio or when teaching clicks, vowels, or glossary terms, you MUST check this list. If the term matches an available file, respond with a markdown link shaped exactly like this: 
+         \`[Play <Title>](audio:<filename>)\`
+       - Example: If the user asks for the Alveolar click, output \`[Play The Alveolar click](audio:1-The Alveolar click.m4a)\`
+       - Please use exact filenames from the list above. Do NOT hallucinate audio files.
+       - This will trigger a custom audio player on their screen so they can listen to the pronunciation!
 
+    7. **Speech Lab & Practice**: 
+       - Encourage students to use the **Microphone icon** 🎙️ below to record themselves. 
+       - You can then evaluate their pronunciation, analyze their clicks, and provide a score!
+       - Tell them: "Hold the mic, say it back to me, and let's see how close you get to the authentic sound!"
     `;
 
         // Use Gemini 2.0 Flash (Confirmed Available)
@@ -73,7 +81,8 @@ export async function POST(req: Request) {
             const fileData = fs.readFileSync(audioRefsPath, 'utf8');
             const audioData = JSON.parse(fileData);
             
-            fileParts = audioData.map((file: any) => ({
+            // Limit to 20 files to avoid hitting request limits/timeouts
+            fileParts = audioData.slice(0, 20).map((file: any) => ({
                 fileData: {
                     mimeType: file.mimeType,
                     fileUri: file.uri
@@ -93,7 +102,7 @@ export async function POST(req: Request) {
         const result = await model.generateContent(contentParts);
         const response = await result.response;
         const text = response.text();
-        console.log("mn📥 Received response from Gemini.");
+        console.log("📥 Received response from Gemini.");
 
         return NextResponse.json({ role: 'assistant', content: text });
     } catch (error: unknown) {

@@ -1,32 +1,522 @@
 [
   {
-    "name": "training_audio/1773339752981_Track_6_-_Foreign_words.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/sjo8ctebubil",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/1-The Alveolar click.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/qagek4prr0ez",
+    "mimeType": "audio/mp4"
   },
   {
-    "name": "training_audio/Track 1 - Clicks.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/jl15npni69xz",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/1-The Dental click.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/o74yidwat1ma",
+    "mimeType": "audio/mp4"
   },
   {
-    "name": "training_audio/Track 2 - Vowels.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/alkp1ywsx498",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/1-The Lateral click.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/4ro6i81av3jl",
+    "mimeType": "audio/mp4"
   },
   {
-    "name": "training_audio/Track 3 - Alphabet.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/xkkjl35e2f5g",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/1-The Palatal click.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/53axhykw8lz7",
+    "mimeType": "audio/mp4"
   },
   {
-    "name": "training_audio/Track 4 - Nouns.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8ci1lnsv3hb4",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/2-diphtongs-!Gae-1.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/1rlscyex1oe7",
+    "mimeType": "audio/mp4"
   },
   {
-    "name": "training_audio/Track 5 - Glossary.mp3",
-    "uri": "https://generativelanguage.googleapis.com/v1beta/files/set5jqswbh4y",
-    "mimeType": "audio/mp3"
+    "name": "training_audio/2-diphtongs-!Gae.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/jmkxvoset0uq",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-diphtongs-Khoeb.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/ly971j1s58a8",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-diphtongs-Oa.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/4rls6glqgcac",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-diphtongs-|aesen.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/d0lk44pn0lzf",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-diphtongs-||nae.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/ducu9k6uz9c1",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Bē.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/kfa38zrqby99",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Dīb.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/4bpezcp63xdo",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Hā.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/wr0s6k3ckbhm",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Hō.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/utfrit91wkku",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Mā.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/v83lsfn910z3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-long-vowels-Ū.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/86ej5dczm4yb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-nasalised-vowels-!Gû.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/7bkkdq5v5d50",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-nasalised-vowels-Dî.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/i6fp7vqbqsak",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-nasalised-vowels-Mâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/mkuvyrmmshjb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-nasalised-vowels-Sî.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/23psud1d2l78",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-short-vowels-Axab.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/pvvkmqxg4wr4",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-short-vowels-Ega.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/e5sd5cx0maxa",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-short-vowels-Hamo.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/ilcobdt5edli",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-short-vowels-Tawete.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/yfzpkc10arl3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/2-short-vowels-||ari.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/7j4h8z5m7qud",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-B.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/i9sv5iuddv80",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-I.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8o8c4ku04fvn",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-Ts-tse.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/c29py86d958u",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-a.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/euuga9xo9xgb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-d-de.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/r0el5kc6a5f9",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-e.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/se8ht8uino7n",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-g-ke.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/0ygzcwhtmb3q",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-h.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/kaf7fnu1uihp",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-k-kha.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/5hgpiuuj1l0m",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-kh-khi.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/oeey49gce8b6",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-m-em.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/v8b1eae0zfky",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-n-en.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/s9cwnhodhb61",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-o.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/n5ezpum68mjs",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-p.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/vyfkt2qevbr6",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-r-er.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/siv8prz7ex9b",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-s-es.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/z8rnpaki48k6",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-t-te.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/gj8lb4fnuwgb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-u-oe.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/le90jjnsm3eq",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-w-we.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/38clnrcoxte8",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/3-alphabet-x-ge.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/39dxb5jfr6xd",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-!Gôasab.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/suj2ggexivsk",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-!Gôasas.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/guve95g5ncf0",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Buru.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/kvz1kmeza7s1",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Elob.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/vvby3natyxxg",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Khaorob.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/l8mq2hn597c3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Pels.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/9i0htbvxlzgk",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Sas-female.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/frh93133wc63",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Sats-male.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/2tjc5zab2aj7",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Skoli.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/wt2jwrlfyqwa",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-So |ôan.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8jafm425a5kb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Tapaga-i.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/41w1lnn7iw92",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Tita.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/g28ktu1ywqkw",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-Torob.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/4s0ymsvaykep",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-|aesen.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/a0f00dt1qcp6",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-||+Gau:||+uru.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/qwc71tk3chsx",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-||+Khai.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/g6lfm0j7pxsp",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/5-glossary-||ôm.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/xk9juerjm1wu",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsAudos.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/jqbncr72dhyz",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsFlēts.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/hezqk0w44wes",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsForkhōs.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/n2446i1o6mhn",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsKofi-i.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/inf0n9suqe0h",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsKunubes.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/pu4pvgpnuh8j",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsMikis.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/krkqmuar87co",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsPoskantors.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/1635baj2gyyn",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsStasis.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/zqtyaoo2sifx",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsStems.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/xmjizph370di",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsTē-ī.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8bvhrialvr80",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsTrens.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/5o3disuab9b7",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsXale-i.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/adzaxqdt71rt",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsbaeskop.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8ag70rogdmd4",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/6-foreign-wordsmasins.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/8j849rszlime",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi !oes.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/x0jt15wa58ew",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi a ||+an si sa.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/3smp7dmlm9f3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi a ||+an tsi sa.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/u6bz0ionxm4o",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi hâ ||aeb !aroma gangans.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/laku7px0g1i2",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi tsēs.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/g6wclhl6mw0q",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâi ||goas.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/fd7aznfvsnxj",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gâise !gû re.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/7mhsymsnvoa3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-!Gûkhoisâu |namxasib.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/ta1ue0nejw8u",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Axū-e ||+hâbas hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/dcvqs26qc1ns",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Axū-e ||+hâbats hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/yijkbmh4e59n",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Hui ||Khâ ta a.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/2z8ht4k6ecno",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Huisen.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/p5xgn39qn6dd",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Mapa xus ta hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/t56fyfbtck5k",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Mapa xuts ta hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/wudn2t4jsl48",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Mapas ta hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/pnafroe3upr3",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Mapats ta hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/2x2pg2e5xrk9",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Matis |on hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/rbw7aef8sv2s",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Matits |on hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/b8h5gxyiwm41",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Mî re.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/kzag54m9ru1b",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Nē !ās ais ta hâ.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/sflalbt3ci3f",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Nē !ās aits ta hâr.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/hwpqlft2fhqb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Xū-he māsi ||khā ta a.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/61wd28fbci99",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-Xū-he mātsi ||khā ta a.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/gqpri2txr1o8",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-||+Gâxa re.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/60omlp60dogh",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-||+Hanu a, gangan.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/lobal1j5tuay",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-||+Khais go.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/onq7rlb6zu28",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-||+Khaits a .m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/e0y6z3cyehkb",
+    "mimeType": "audio/mp4"
+  },
+  {
+    "name": "training_audio/7-greetings-and-hospitality-||Khawa mûgus.m4a",
+    "uri": "https://generativelanguage.googleapis.com/v1beta/files/ohktx1mh4jj8",
+    "mimeType": "audio/mp4"
   }
 ]
