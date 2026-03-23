@@ -52,7 +52,7 @@ To make Khoekhoegowab (Nama) the most accessible, joyful, and linguistically acc
 | :--- | :--- | :--- |
 | **Frontend** | Next.js 14+ | React framework, SSR, PWA support |
 | **Logic** | TypeScript | Type-safe state management |
-| **AI / LLM** | Google Gemini 2.5 Flash | Multimodal: text, audio, PDF knowledge injection |
+| **AI / LLM** | Google Gemini 1.5 Flash | Multimodal: text, audio, PDF knowledge injection |
 | **Voice (TTS)** | Google Cloud TTS | Premium English explanations (en-AU-Neural2) |
 | **Storage** | Firebase Cloud Storage | Native audio files, user recordings, PDF resources |
 | **Database** | Firebase Firestore | User profiles, progress, XP, lesson state |
@@ -304,109 +304,99 @@ Designed for children — every session should feel like winning.
 
 ## 🚀 Delivery Schedule — March 16 to May 31, 2026
 
-**Total runway: 11 weeks · Running ~2 weeks ahead of schedule as of Mar 23**
+**Total runway: 11 weeks**
 Target: Full Phases 1–3 shipped. Phase 4 scoped and ready to build post-launch.
 
 ---
 
-### ✅ SPRINT 1 — Week 1–2 · Mar 16–29
-**Theme: Fix the Foundation — COMPLETE (delivered Mar 17)**
+### 📅 SPRINT 1 — Week 1–2 · Mar 16–29
+**Theme: Fix the Foundation**
 
-| Task | Status |
-| :--- | :--- |
-| Fix React hydration mismatch warnings | ✅ Done |
-| Upgrade Gemini 1.5 Flash → 2.5 Flash across all modules | ✅ Done |
-| Remove "Upload" feature and reorganise sidebar | ✅ Done |
-| Standardise audio click symbol handling (`║` vs `\|\|`) | ✅ Done |
-| Audit Firebase Storage CORS / 403 issues | ✅ Done |
-| Audio tagging schema — Firestore structure designed | ✅ Done |
-| Book recording session (3 voices: male, female, child) | 🟡 In progress — Ali |
+The goal of this sprint is to clean up existing code and lock in the infrastructure everything else depends on. No new features ship until the foundation is solid.
 
-**Audit scores: Visual 10/10 · Functional 10/10 · Trust 9/10**
+| Task | Owner | Status |
+| :--- | :--- | :--- |
+| Fix React hydration mismatch warnings | Dev | 🔴 To Do |
+| Audio tagging schema — design Firestore structure | Dev | 🔴 To Do |
+| Run `sync_audio.ts` — map all 104 files to Firestore tags | Dev | 🔴 To Do |
+| Upgrade Gemini model version (resolve 400 errors) | Dev | 🔴 To Do |
+| Audit Firebase Storage CORS / 403 issues | Dev | 🔴 To Do |
+| Book recording session (3 voices: male, female, child) | Ali | 🔴 To Do |
 
----
-
-### ✅ SPRINT 2 — Week 3–4 · Mar 30–Apr 12
-**Theme: Sound & Vision — COMPLETE (delivered Mar 23, ahead of schedule)**
-
-| Task | Status |
-| :--- | :--- |
-| SVG mouth/tongue cross-section — all 4 click positions | ✅ Done (prototype) |
-| Tongue path morphing animation (rest → contact → release) | ✅ Done |
-| Jaw-drop animation on palatal click (`!`) | ✅ Done |
-| Contact glow + anatomy labels per click | ✅ Done |
-| WaveSurfer.js — native audio waveform (amber, dim → bright on play) | ✅ Done |
-| User recording waveform — live during record, static after | ✅ Done |
-| Side-by-side waveform layout in Speech Lab | ✅ Done |
-| Click spike vertical marker on both waveforms | ✅ Done |
-| Overlay mode — native waveform over user canvas | ✅ Done |
-| Accuracy score + feedback chips (good / weak / miss) | ✅ Done |
-| Kora's adaptive feedback text per quality level | ✅ Done |
-| iOS Safari fallback (`audio/mp4` MediaRecorder) | ✅ Done |
-| **Integrate SVG mouth animation into actual app (not prototype only)** | 🔴 Remaining |
-
-**Sprint exit criteria met.** SVG-to-app integration carries into Sprint 3.
+**Sprint exit criteria:** App runs without console errors. All 104 audio files tagged in Firestore. Recording session date confirmed.
 
 ---
 
-### 📅 SPRINT 3 — Week 5 · Mar 23–Apr 5 *(brought forward — we are here)*
-**Theme: Audio Recording + SVG Integration**
+### 📅 SPRINT 2 — Week 3–4 · Mar 30–Apr 12
+**Theme: Sound & Vision**
 
-Two parallel tracks this sprint: Ali records, AG integrates the SVG component.
+The two most important new features for learners: seeing how clicks are formed, and seeing what their audio looks like.
 
-#### Track A — Recording (Ali)
+| Task | Owner | Notes |
+| :--- | :--- | :--- |
+| SVG mouth/tongue base illustration — 4 click positions | Design/Dev | Profile cross-section, stylised not clinical |
+| Animate Dental click (`\|`) — rest → contact → release | Dev | GSAP / CSS keyframes |
+| Animate Palatal click (`!`) — jaw drop visible | Dev | |
+| Animate Lateral click (`║`) — side-tongue release | Dev | |
+| Animate Alveolar click (`╪`) — tongue-between-teeth pull | Dev | |
+| Sync mouth animation to audio playback timing | Dev | |
+| Install WaveSurfer.js — render native audio waveform | Dev | amber/gold colour |
+| Add user recording waveform (post-record render) | Dev | blue/white colour |
+| Side-by-side waveform layout in Speech Lab | Dev | |
+| Click spike callout annotation on native waveform | Dev | vertical marker at transient |
+
+**Sprint exit criteria:** All 4 click animations play in sync with audio. Both waveforms render in Speech Lab after a recording.
+
+---
+
+### 📅 SPRINT 3 — Week 5 · Apr 13–19
+**Theme: Audio Recording Week** *(Non-code sprint)*
+
+This week is reserved for the recording session. Development continues on lower-priority tasks.
 
 | Task | Notes |
 | :--- | :--- |
-| Record Level 1 — all 4 clicks × 3 voices | Male, female, child. Studio or quiet space. |
+| Record Level 1 priority audio — all 4 clicks × 3 voices | Studio or quiet space |
 | Record Level 2 essentials — Î, Hî-î, Toxoba, Gangans, !Gâi tsēs, !Gâi ║goas, !Gâi !oes | |
 | Record Numbers 1–10 × 3 voices | |
-| Record Counting Rhyme × 2 voices (adult male + child) | Milestone content — do not skip |
-| Record Body Parts × 1 voice | Can expand to 3 voices in Phase 4 |
-| Upload all files to Firebase `training_audio/` | Follow existing naming convention |
-| Tag all new files in Firestore using audio schema | See `Wave.md` for schema |
+| Record Counting Rhyme × 2 voices (adult male + child) | Milestone content |
+| Record Body Parts × 1 voice (can expand later) | |
+| Upload all files to Firebase `training_audio/` | Follow naming convention |
+| Tag all new files in Firestore using audio schema | |
 
-#### Track B — SVG Integration (AG)
-
-| Task | Notes |
-| :--- | :--- |
-| Integrate `ClickAnimator` SVG component into Lesson 1.1 page | Use prototype from session as reference |
-| Sync mouth animation to WaveSurfer playback timing | Fire animation on WaveSurfer `audioprocess` event |
-| Trigger jaw-drop frame on palatal click audio spike position | Use `nativeSpikePosition` from spike detection |
-| Mobile: tap-to-replay animation on touch devices | `touch-action: manipulation` on replay button |
-| Verify SVG renders correctly at mobile viewport widths | Test at 375px and 390px |
-
-**Sprint exit criteria:** SVG mouth animation live in the app, synced to audio. Level 1 and Level 2 audio recorded, uploaded, tagged.
+**Sprint exit criteria:** Level 1 and Level 2 audio fully recorded, uploaded, and tagged. Counting Rhyme recorded.
 
 ---
 
-### 📅 SPRINT 4 — Week 6–7 · Apr 6–19 *(brought forward from Apr 20)*
+### 📅 SPRINT 4 — Week 6–7 · Apr 20–May 3
 **Theme: Child-First Experience**
 
 The biggest structural change to the app — splitting into Kid Mode and Parent Mode, and wiring up the full curriculum map.
 
 | Task | Notes |
 | :--- | :--- |
-| Firebase Auth — family account model (parent + child profiles) | Parent creates account, adds child profiles |
-| Kid Mode UI — full-screen, game-like layout | Short sessions, reward-dense |
-| Parent Mode UI — progress dashboard | Clean, data-focused |
-| Curriculum map screen — 8 levels as visual unlock path | See `Kora-LessonPlans.md` for level structure |
-| Level gating — lesson locked until previous ≥ 80% score | Firestore progress check |
-| Build Lesson 1.1 (4 Clicks) — SVG + waveform fully integrated | First complete lesson end-to-end |
-| Build Lesson 1.2 (Vowels & Diphthongs) | |
+| Firebase Auth — family account model (parent + child profiles) | Parent creates account; adds child profiles |
+| Kid Mode UI — full-screen, game-like layout | Based on existing dark theme |
+| Parent Mode UI — dashboard layout, progress view | Clean, data-focused |
+| Curriculum map screen — 8 levels displayed as path | Visual level-unlock progression |
+| Level gating — lesson locked until previous ≥ 80% | Firestore progress check |
+| Build Lesson 1.1 (4 Clicks) with new SVG + waveform integrated | First fully-designed lesson |
+| Build Lesson 1.2 (Vowels) | |
 | Build Lesson 2.1 (Essentials: Î, Hî-î, Toxoba) | |
 | Build Lesson 2.2 (Basic Greetings) | |
 | Build Lesson 2.3 (How Are You?) | |
 | Build Lesson 3.1 (Self Introduction) | |
 | Streak system — daily streak counter with animation | |
-| XP system — persistent, per-child, shown on dashboard | |
+| XP system — persistent, per-child, displayed on dashboard | |
 
-**Sprint exit criteria:** Kid Mode and Parent Mode functional. Levels 1–3 playable end-to-end with level gating. Streaks and XP live.
+**Sprint exit criteria:** Kid Mode and Parent Mode both functional. Levels 1–3 playable end-to-end with level gating. Streaks and XP tracking live.
 
 ---
 
-### 📅 SPRINT 5 — Week 8–9 · Apr 20–May 3 *(brought forward)*
+### 📅 SPRINT 5 — Week 8–9 · May 4–17
 **Theme: Depth & Intelligence**
+
+Add the features that make Kora feel like a real tutor rather than a flashcard app.
 
 | Task | Notes |
 | :--- | :--- |
@@ -414,58 +404,48 @@ The biggest structural change to the app — splitting into Kid Mode and Parent 
 | Phonetic highlighting — mispronounced letters highlighted in word | Post-score UI overlay |
 | Speech Lab — minimum 3 attempts before "pass" | Mastery not speed |
 | Build Lessons 3.2–3.3 (Noun Classes, Pronouns) | Grammar lessons with visual aids |
-| Build Lessons 4.1–4.2 (Numbers 1–10, Counting Rhyme) | Counting Rhyme = full milestone celebration |
+| Build Lessons 4.1–4.2 (Numbers 1–10, Counting Rhyme) | Counting Rhyme = milestone animation |
 | Build Lessons 5.1–5.3 (Weather, Sky, Body Parts) | |
 | PDF knowledge injection pipeline | Chunk Pedro Dausab guide → inject to Gemini context |
 | Kora adaptive behaviour — weak-spot detection | Flag if child fails same click type 3× |
-| Parent Mode — weak-spot alert card | e.g. "Amara struggles with the ║ click" |
-| Cultural context notes — add to relevant lessons | Brief Khoekhoē cultural notes in lesson flow |
+| Parent Mode — weak-spot alert card | "Amara struggles with the ║ click" |
+| Cultural context notes — add to relevant lessons | Brief notes on Khoekhoē culture in lesson flow |
 
-**Sprint exit criteria:** PDF injection live. Per-click scores in Speech Lab. Counting Rhyme milestone with celebration animation. Levels 1–5 playable.
+**Sprint exit criteria:** PDF injection live. Speech Lab gives per-click scores. Counting Rhyme lesson ships as a milestone with full celebration animation. Levels 1–5 fully playable.
 
 ---
 
-### 📅 SPRINT 6 — Week 10–11 · May 4–17 *(brought forward)*
-**Theme: Polish, Offline & Remaining Lessons**
+### 📅 SPRINT 6 — Week 10–11 · May 18–31
+**Theme: Polish, Offline & Launch Prep**
+
+The final sprint focuses on robustness, reach (offline), and the remaining lesson content.
 
 | Task | Notes |
 | :--- | :--- |
 | Build Lessons 6.1–6.4 (Everyday Life) | |
-| Build Lessons 7.1–7.4 (Conversation — At the Market milestone) | |
-| Build Lessons 8.1–8.4 (Grammar Deep Dive + Counting Rhyme capstone) | |
-| Badges — 10 cultural achievement badges | e.g. "Master of the ! click", "Can greet an elder" |
+| Build Lessons 7.1–7.4 (Conversation — including At the Market milestone) | |
+| Build Lessons 8.1–8.4 (Grammar Deep Dive) | |
+| Badges — design and implement 10 cultural achievement badges | |
 | Family Leaderboard — parent vs child XP race | |
-| PWA — Next.js service worker, offline caching | Level 1–2 cached on first load |
-| Offline Speech Lab fallback — waveform only (no Gemini) | |
-| Mobile optimisation pass — all touch interactions | iOS + Android |
+| PWA setup — Next.js service worker, offline caching | Level 1–2 cached on first load |
+| Offline Speech Lab fallback — waveform comparison only (no Gemini) | |
+| Mobile optimisation pass — all touch interactions reviewed | iOS + Android |
 | Performance audit — lesson load times, audio latency | |
-| Onboarding flow — new user walkthrough | Kid Mode + Parent Mode paths |
+| Bug bash — full regression test across devices | |
+| Onboarding flow — new user walkthrough (Kid Mode + Parent Mode) | |
+| Launch checklist — Vercel deployment, Firebase rules review, env vars | |
 
-**Sprint exit criteria:** All 30 lessons playable. PWA offline Levels 1–2. Full mobile regression pass.
-
----
-
-### 📅 BUFFER + LAUNCH PREP — Week 12–13 · May 18–31
-**Theme: Bug Bash & Ship**
-
-Two weeks of buffer — absorbed from being 2 weeks ahead of the original schedule.
-
-| Task | Notes |
-| :--- | :--- |
-| Full regression test across devices | iOS Safari, Android Chrome, desktop |
-| Firebase rules review — security audit | Ensure user recordings are private |
-| Vercel production deployment checklist | Env vars, domain, analytics |
-| Launch checklist sign-off | Ali final approval |
+**Sprint exit criteria:** All 30 lessons playable. PWA offline mode functional for Levels 1–2. App passes full regression test on mobile. Ready for first real users.
 
 ---
 
-### 🏁 Launch Target: **May 31, 2026** *(on track)*
+### 🏁 Launch Target: **May 31, 2026**
 
 What ships on launch day:
 - ✅ 8 levels, 30 lessons, fully sourced from Pedro Dausab's guide
 - ✅ Kid Mode + Parent Mode
 - ✅ Animated SVG mouth/tongue illustrations for all 4 clicks
-- ✅ Speech Wave Visualizer — native + user waveforms, overlay mode, spike detection
+- ✅ Speech Wave Visualizer (side-by-side waveforms)
 - ✅ Speech Lab with per-click accuracy scores
 - ✅ 3-voice audio (male, female, child) for Levels 1–2
 - ✅ Family accounts (parent + child profiles)
@@ -477,7 +457,7 @@ What ships on launch day:
 
 **Post-launch (Phase 4 — June onwards):**
 - Community voice recordings
-- Multi-voice toggle (adult / female / child playback)
+- Multi-voice toggle
 - Educator dashboard
 - School pilot programme in Namibia
 
@@ -557,11 +537,9 @@ The language doesn't disappear. Kora won't let it.
 | :--- | :--- |
 | `Kora-Master.md` | This file — product vision, features, schedule |
 | `Kora-LessonPlans.md` | Full 8-level curriculum: vocabulary, teaching notes, activities, audio refs |
-| `Wave.md` | Speech Wave Visualizer — full implementation spec for AG |
-| `Wave-Fixes.md` | Bug fixes for Speech Lab waveform (Sprint 2 bugs — resolved Mar 23) |
 | `nama_language_guide.md` | Source material — Pedro Dausab / Dept of Cultural Affairs, Western Cape |
 
 ---
 
-*Last updated: March 23, 2026 — Sprint 2 complete, running 2 weeks ahead of schedule*
+*Last updated: March 16, 2026*
 *Built with love for the Khoekhoē people*

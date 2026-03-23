@@ -8,13 +8,17 @@ import Image from "next/image";
 
 export default function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
         return () => unsubscribe();
     }, []);
+
+    if (!mounted) return null;
 
     const handleGoogleLogin = async () => {
         try {

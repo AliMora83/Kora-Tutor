@@ -22,7 +22,8 @@
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "urllib": "^4.9.0"
+    "urllib": "^4.9.0",
+    "wavesurfer.js": "^7.12.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

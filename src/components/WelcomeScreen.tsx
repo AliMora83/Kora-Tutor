@@ -25,6 +25,9 @@ export function WelcomeScreen({ input, setInput, handleSend, isLoading }: Welcom
                             src="/logo.png"
                             alt="Kora Icon"
                             fill
+                            priority
+                            loading="eager"
+                            sizes="(max-width: 768px) 96px, 96px"
                             className="object-cover"
                         />
                     </div>

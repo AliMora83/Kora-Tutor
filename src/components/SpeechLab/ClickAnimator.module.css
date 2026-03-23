@@ -1,0 +1,130 @@
+/* ClickAnimator.module.css */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(10, 6, 2, 0.6);
+  border: 1px solid rgba(245, 166, 35, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* ── Click selector tabs ── */
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b6b6b;
+}
+
+.tab:hover {
+  background: rgba(245, 166, 35, 0.08);
+  border-color: rgba(245, 166, 35, 0.2);
+  color: #a0a0a0;
+}
+
+.tabActive {
+  background: rgba(245, 166, 35, 0.12);
+  border-color: rgba(245, 166, 35, 0.45);
+  color: #F5A623;
+}
+
+.tabSymbol {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.tabName {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* ── SVG placeholder (illustration coming via Gemini) ── */
+.svgPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  background: rgba(5, 3, 1, 0.8);
+  border-radius: 16px;
+  border: 1px dashed rgba(245, 166, 35, 0.2);
+}
+
+.svgPlaceholderSymbol {
+  font-size: 36px;
+  font-weight: 700;
+  color: #F5A623;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(245, 166, 35, 0.5));
+}
+
+.svgPlaceholderPhase {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #555;
+}
+
+
+/* Tip text */
+.tip {
+  font-size: 11px;
+  color: #666;
+  line-height: 1.5;
+  padding: 2px 4px;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tipSymbol {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #F5A623;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ── Mobile ── */
+@media (max-width: 430px) {
+  .root {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .tabSymbol {
+    font-size: 16px;
+  }
+
+  .tabName {
+    font-size: 8px;
+  }
+
+  .tip {
+    font-size: 10px;
+  }
+}

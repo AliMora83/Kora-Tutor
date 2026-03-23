@@ -9,14 +9,16 @@ import Link from 'next/link';
 export default function ProgressPage() {
     const [lessons, setLessons] = useState<Lesson[]>([]);
 
+    // Initial load — deferred to avoid synchronous setState on mount (hydration guard)
     useEffect(() => {
-        // Load progress from local storage on mount (wrapped in setTimeout to avoid synchronous set-state warning)
         const timer = setTimeout(() => {
             setLessons(getHydratedLessons());
         }, 0);
         return () => clearTimeout(timer);
+    }, []);
 
-        // Listen for storage events in case chat updates in another tab/window (optional polish)
+    // Cross-tab sync — updates progress if chat is open in another tab
+    useEffect(() => {
         const handleStorageChange = () => {
             setLessons(getHydratedLessons());
         };

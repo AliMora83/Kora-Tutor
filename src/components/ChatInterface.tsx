@@ -6,7 +6,8 @@ import remarkGfm from 'remark-gfm';
 import FirebaseAudioPlayer from './FirebaseAudioPlayer';
 import { Send, Plus, Trash2, Volume2, Square, Mic, X, Check, RefreshCw } from 'lucide-react';
 import { useAudioOrchestrator } from '@/hooks/useAudioOrchestrator';
-import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+import { useAudioRecorder as useBasicAudioRecorder } from '@/hooks/useAudioRecorder';
+import SpeechLab from './SpeechLab/SpeechLab';
 
 export type Message = {
     role: 'user' | 'assistant';
@@ -26,9 +27,16 @@ interface ChatInterfaceProps {
 export function ChatInterface({ messages, input, setInput, handleSend, isLoading, onNewChat, onDeleteChat }: ChatInterfaceProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { playMessage, stop, playingMessageId, activeSegmentIndex } = useAudioOrchestrator();
-    const { isRecording, audioBlob, startRecording, stopRecording, clearRecording } = useAudioRecorder();
+    const { isRecording: isBasicRecording, audioBlob, startRecording: startBasicRecording, stopRecording: stopBasicRecording, clearRecording } = useBasicAudioRecorder();
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [evaluation, setEvaluation] = useState<any>(null);
+    const [mounted, setMounted] = useState(false);
+    const [showSpeechLab, setShowSpeechLab] = useState(false);
+    const [selectedNativeAudio, setSelectedNativeAudio] = useState<string | null>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,6 +47,13 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
         setIsEvaluating(true);
         try {
             const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
+            
+            // Auto-detect last audio if not selected
+            if (!selectedNativeAudio && lastAssistantMsg) {
+                const match = lastAssistantMsg.content.match(/\[([^\]]+)\]\(audio:(.+?)\)/);
+                if (match) setSelectedNativeAudio(match[2]);
+            }
+
             const formData = new FormData();
             formData.append('audio', audioBlob, 'speech.webm');
             formData.append('expectedText', lastAssistantMsg?.content || "Nama phrase");
@@ -105,18 +120,21 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                     const isActive = activeSegmentIndex === sIdx;
                     if (seg.type === 'text') {
                         return (
-                            <span 
+                            <div 
                                 key={sIdx} 
                                 className={`inline-block transition-all duration-300 rounded px-1 ${isActive ? 'bg-secondary/20 text-secondary shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 'text-gray-200'}`}
                             >
                                 <ReactMarkdown
                                     urlTransform={(value: string) => value}
                                     remarkPlugins={[remarkGfm]}
-                                    components={markdownComponents}
+                                    components={{
+                                        ...markdownComponents,
+                                        p: ({node, ...props}: any) => <span {...props} />
+                                    }}
                                 >
                                     {seg.content}
                                 </ReactMarkdown>
-                            </span>
+                            </div>
                         );
                     } else {
                         return (
@@ -140,7 +158,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
         th: ({node, ...props}: any) => <th className="px-6 py-4 font-semibold border-b border-[#3a3a3a]" {...props} />,
         td: ({node, ...props}: any) => <td className="px-6 py-4 border-b border-[#3a3a3a] whitespace-nowrap" {...props} />,
         tr: ({node, ...props}: any) => <tr className="hover:bg-[#333333] transition-colors" {...props} />,
-        p: ({node, ...props}: any) => <p className="mb-4 last:mb-0 whitespace-pre-wrap" {...props} />,
+        p: ({node, ...props}: any) => <div className="mb-4 last:mb-0 whitespace-pre-wrap" {...props} />,
         ul: ({node, ...props}: any) => <ul className="list-disc pl-5 mb-4 space-y-1" {...props} />,
         ol: ({node, ...props}: any) => <ol className="list-decimal pl-5 mb-4 space-y-1" {...props} />,
         a: ({node, href, children, ...props}: any) => {
@@ -168,7 +186,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
             {/* Header - Minimal */}
             <header className="p-4 flex gap-4 justify-between items-center text-gray-500 text-sm border-b border-white/5">
                 <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">Kora 2.0 Flash</span>
+                    <span className="font-semibold text-white">Kora 2.5 Flash</span>
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse my-auto"></span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -237,15 +255,45 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
             </div>
 
             {/* Bottom Input Area */}
-            <div className="p-4 md:p-6 mx-auto w-full max-w-4xl space-y-4">
-                {/* Speech Lab Overlay */}
-                {(audioBlob || isRecording || evaluation) && (
+            <div className={`p-4 md:p-6 mx-auto w-full max-w-4xl space-y-4 ${showSpeechLab ? 'relative z-50' : ''}`}>
+                
+                {/* Speech Lab Toggle */}
+                {!showSpeechLab && (
+                    <div className="flex justify-center">
+                         <button 
+                            onClick={() => {
+                                // Find last audio to analyze if none selected
+                                if (!selectedNativeAudio) {
+                                    const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
+                                    const match = lastAssistantMsg?.content.match(/\[([^\]]+)\]\(audio:(.+?)\)/);
+                                    if (match) setSelectedNativeAudio(match[2]);
+                                }
+                                setShowSpeechLab(true);
+                            }}
+                            className="text-xs bg-secondary/10 hover:bg-secondary/20 text-secondary px-4 py-1.5 rounded-full border border-secondary/20 transition-all flex items-center gap-2 group"
+                         >
+                            <Mic size={14} className="group-hover:scale-110 transition-transform" />
+                            Open Visual Speech Lab
+                         </button>
+                    </div>
+                )}
+
+                {/* New Visual Speech Lab Component */}
+                {showSpeechLab && (
+                    <SpeechLab 
+                        nativeFilename={selectedNativeAudio} 
+                        onClose={() => setShowSpeechLab(false)} 
+                    />
+                )}
+
+                {/* Old Speech Lab Overlay (Kept for basic evaluation if needed, but could be merged) */}
+                {!showSpeechLab && (audioBlob || isBasicRecording || evaluation) && (
                     <div className="bg-[#1a1a1a]/80 backdrop-blur-xl border border-secondary/20 rounded-3xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
                         <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-secondary'}`}></div>
+                                <div className={`w-3 h-3 rounded-full ${isBasicRecording ? 'bg-red-500 animate-pulse' : 'bg-secondary'}`}></div>
                                 <span className="text-sm font-medium text-gray-300">
-                                    {isRecording ? 'Listening to your Nama...' : audioBlob ? 'Recording captured!' : 'Speech Lab'}
+                                    {isBasicRecording ? 'Listening to your Nama...' : audioBlob ? 'Recording captured!' : 'Speech Lab'}
                                 </span>
                             </div>
                             <div className="flex gap-2">
@@ -293,15 +341,15 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
 
                 <div className="flex gap-3">
                     <button
-                        onMouseDown={startRecording}
-                        onMouseUp={stopRecording}
-                        onMouseLeave={stopRecording}
-                        onTouchStart={(e) => { e.preventDefault(); startRecording(); }}
-                        onTouchEnd={(e) => { e.preventDefault(); stopRecording(); }}
-                        className={`p-4 rounded-3xl transition-all ${isRecording ? 'bg-red-500 text-white scale-110 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-[#2a2a2a] text-gray-400 hover:text-secondary hover:border-secondary/30 border border-white/5'}`}
+                        onMouseDown={startBasicRecording}
+                        onMouseUp={stopBasicRecording}
+                        onMouseLeave={stopBasicRecording}
+                        onTouchStart={(e) => { e.preventDefault(); startBasicRecording(); }}
+                        onTouchEnd={(e) => { e.preventDefault(); stopBasicRecording(); }}
+                        className={`p-4 rounded-3xl transition-all ${isBasicRecording ? 'bg-red-500 text-white scale-110 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-[#2a2a2a] text-gray-400 hover:text-secondary hover:border-secondary/30 border border-white/5'}`}
                         title="Hold to Record your Nama"
                     >
-                        <Mic size={24} className={isRecording ? 'animate-pulse' : ''} />
+                        <Mic size={24} className={isBasicRecording ? 'animate-pulse' : ''} />
                     </button>
 
                     <div className="relative flex-1 bg-[#2a2a2a] rounded-3xl border border-white/5 focus-within:border-secondary/50 transition-colors">

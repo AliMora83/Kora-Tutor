@@ -68,13 +68,14 @@ export async function POST(req: Request) {
        - Tell them: "Hold the mic, say it back to me, and let's see how close you get to the authentic sound!"
     `;
 
-        // Use Gemini 2.0 Flash (Confirmed Available)
+        // Use Gemini 2.5 Flash (Confirmed Available)
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
             systemInstruction: systemInstruction
         });
 
         // Load Audio Files if they exist
+        // NOTE: Gemini File API URIs expire every 48h. Re-run `npx tsx src/scripts/sync_audio.ts` if audio stops working.
         const audioRefsPath = path.join(process.cwd(), 'src/data/gemini_audio_refs.json');
         let fileParts: any[] = [];
         if (fs.existsSync(audioRefsPath)) {
@@ -93,13 +94,24 @@ export async function POST(req: Request) {
 
         console.log(`📤 Sending prompt to Gemini (Model: gemini-2.5-flash) with Knowledge Injection...`);
         
-        // Combine prompt and audio files
-        const contentParts = [
-            ...fileParts,
-            { text: prompt }
-        ];
-
-        const result = await model.generateContent(contentParts);
+        // Try with audio files injected; fall back to text-only if URIs have expired
+        let result;
+        try {
+            const contentPartsWithAudio = [
+                ...fileParts,
+                { text: prompt }
+            ];
+            result = await model.generateContent(contentPartsWithAudio);
+        } catch (audioError: unknown) {
+            const msg = (audioError as Error).message || '';
+            // Expired Gemini File API URIs produce a 400/404 — retry text-only
+            if (fileParts.length > 0 && (msg.includes('400') || msg.includes('404') || msg.includes('not found') || msg.includes('File'))) {
+                console.warn('⚠️  Gemini audio URIs appear expired. Falling back to text-only. Re-run `npx tsx src/scripts/sync_audio.ts` to refresh.');
+                result = await model.generateContent([{ text: prompt }]);
+            } else {
+                throw audioError;
+            }
+        }
         const response = await result.response;
         const text = response.text();
         console.log("📥 Received response from Gemini.");

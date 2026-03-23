@@ -4,12 +4,20 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, BarChart2, Settings, UploadCloud } from 'lucide-react';
+import { MessageSquare, BarChart2, Settings } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const [mounted, setMounted] = React.useState(false);
+    
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
-    const isActive = (path: string) => pathname === path;
+    const isActive = (path: string) => {
+        if (!mounted) return false;
+        return pathname === path;
+    };
 
     return (
         <nav className="fixed z-50 bg-[#0f0f0f] border-[#2a2a2a]
@@ -44,13 +52,6 @@ export default function Sidebar() {
                     icon={<BarChart2 size={20} />}
                     label="Progress"
                     active={isActive('/progress')}
-                />
-
-                <NavItem
-                    href="/upload"
-                    icon={<UploadCloud size={20} />}
-                    label="Audio Training"
-                    active={isActive('/upload')}
                 />
 
                 {/* Spacer pushes settings to bottom on desktop */}

@@ -20,6 +20,7 @@ export default function HomePage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   // 1. Auth Listener
   useEffect(() => {
@@ -38,10 +39,10 @@ export default function HomePage() {
           }
         }
       } else {
-        // Clear or Keep local? Choosing to clear for privacy on logout.
         setMessages([]);
         setHasStarted(false);
       }
+      setIsAuthChecking(false);
     });
 
     return () => unsubscribe();
@@ -130,6 +131,10 @@ export default function HomePage() {
     setHasStarted(false);
     showToast("Chat history deleted");
   };
+
+  if (isAuthChecking) {
+    return <div className="h-screen w-full bg-[#1b1b1b]" />;
+  }
 
   // --- EMPTY STATE (Claude/Gemini Welcome) ---
   if (!hasStarted) {
