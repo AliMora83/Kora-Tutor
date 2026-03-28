@@ -90,7 +90,7 @@ Commit any decisions, architecture choices, or review notes back to `Kora-Master
 |-------|------|
 | **Claude** | Full-stack agent — React, TypeScript, architecture |
 | **Gemini** | Analysis + automation tasks |
-| **Qwen** | Build agent — autonomous implementation |
+| **Antigravity** | Build agent — autonomous implementation |
 | **Comet (Perplexity)** | Cross-check, ratification, architecture review |
 
 Review states: `Unreviewed` → `Agent Reviewed` → `Cross-Checked` → `Ratified`
