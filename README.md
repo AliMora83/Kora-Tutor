@@ -37,27 +37,6 @@ Make Khoekhoegowab the most accessible, joyful, and linguistically accurate indi
 
 ---
 
-## 🚀 Getting Started
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Set up environment variables (.env.local)
-GEMINI_API_KEY=your_key
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
-GOOGLE_CLOUD_TTS_KEY=your_key
-
-# 3. Synchronize Audio References (maps Firebase files to Firestore tags)
-npx tsx src/scripts/sync_audio.ts
-
-# 4. Start Development Server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app.
-
----
 
 ## 🤖 Instructions for AI Agents
 
