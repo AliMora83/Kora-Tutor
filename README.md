@@ -99,9 +99,7 @@ Review states: `Unreviewed` → `Agent Reviewed` → `Cross-Checked` → `Ratifi
 
 ## 📋 Dev Mission Control
 
-- **Sheet:** [Google Sheets Dashboard](https://docs.google.com/spreadsheets/d/1h-Yy9hkVHWr-BbnLiXVcMZ4b8eQm__d4QOCvY8mO3y8)
-- **Apps Script:** [Automation Script](https://script.google.com/u/0/home/projects/1sDVQDD510ZC0UHpfvpIkt4TvbMnNRTNtYzivxuZ8qB2oeud6DvzcV_MO/edit)
-
+TBC
 ---
 
 ## 📄 Related Documents
@@ -114,4 +112,4 @@ Review states: `Unreviewed` → `Agent Reviewed` → `Cross-Checked` → `Ratifi
 
 ---
 
-_Built with love for the Khoekhoē people_
+_Built by Khoekhoē for Khoekhoē
