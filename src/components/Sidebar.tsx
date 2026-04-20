@@ -57,12 +57,14 @@ export default function Sidebar() {
                 {/* Spacer pushes settings to bottom on desktop */}
                 <div className="hidden md:block md:flex-1" />
 
+{/*
                 <NavItem
                     href="/settings"
                     icon={<Settings size={20} />}
                     label="Settings"
                     active={isActive('/settings')}
                 />
+                */}
             </div>
         </nav>
     );
