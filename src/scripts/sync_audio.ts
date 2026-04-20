@@ -21,7 +21,7 @@ async function main() {
     
     console.log(`Found ${files.length} files in Firebase Storage`);
     
-    let geminiFiles: any[] = [];
+    const geminiFiles: any[] = [];
 
     const tempDir = path.join(process.cwd(), 'tmp');
     if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);

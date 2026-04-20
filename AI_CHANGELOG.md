@@ -1,6 +1,20 @@
-# AI_CHANGELOG — Kora-Tutor
+# 🤖 AI Changelog — Kora-Tutor
 
-| Entry | Date | Action | Metadata |
-| :--- | :--- | :--- | :--- |
-| `1.0.1` | 2026-03-31 | Initialized MACP documentation and sync infrastructure. Renamed Kora-Master.md to Master.md, created AGENT-ONBOARDING.md, and PROJECT-SYNC.json workflow. | ali-mora/antigravity |
-| `1.0.0` | 2026-03-16 | Initial project vision and lesson plans defined. Core Next.js 14+ scaffolding. | initial-setup |
+> Auto-maintained by GitHub Actions. Each entry reflects a versioned push to the main branch.
+> Newest entries appear first. Do not edit manually.
+
+---
+
+## 2026-04-20 — Local Test Validation
+- Localhost UI and functionality tested successfully.
+- Visual Speech Lab and Chat Interface rendering interactively.
+- WaveSurfer.js rendering waveform correctly with real-time feedback processing.
+- Progress checkpoints saved:
+  - ![Speech Lab Analysis](./docs/images/media__1776703126348.png)
+  - ![Chat Interface](./docs/images/media__1776703126396.png)
+
+## v1.1.0 — 2026-04-01
+- Infrastructure standardization: MACP v2.0 deployment
+- Initialized AI_CHANGELOG.md
+- Configured real-time sync with Namka Control
+- Automated versioning workflows

@@ -1,0 +1,102 @@
+name: Update Master.md Date & Version
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-master-date:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read and bump patch version
+        id: version
+        run: |
+          # Extract current version from Master.md (expects line: "Version: X.Y.Z")
+          CURRENT=$(grep -oP 'Version: \K[0-9]+\.[0-9]+\.[0-9]+' Master.md)
+
+          if [ -z "$CURRENT" ]; then
+            echo "ERROR: Could not find 'Version: X.Y.Z' in Master.md"
+            exit 1
+          fi
+
+          MAJOR=$(echo "$CURRENT" | cut -d. -f1)
+          MINOR=$(echo "$CURRENT" | cut -d. -f2)
+          PATCH=$(echo "$CURRENT" | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+          echo "new=$NEW_VERSION"  >> $GITHUB_OUTPUT
+          echo "Bumping version: $CURRENT → $NEW_VERSION"
+
+      - name: Update date and version in Master.md
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+
+          # Validate date line exists before updating
+          if ! grep -qP 'Last updated: [0-9]{4}-[0-9]{2}-[0-9]{2}' Master.md; then
+            echo "ERROR: Could not find 'Last updated: YYYY-MM-DD' in Master.md"
+            exit 1
+          fi
+
+          sed -i "s/Last updated: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}/Last updated: $TODAY/g" Master.md
+          sed -i "s/Version: ${{ steps.version.outputs.current }}/Version: ${{ steps.version.outputs.new }}/g" Master.md
+
+          echo "Updated Master.md → date: $TODAY, version: ${{ steps.version.outputs.new }}"
+
+      - name: Prepend entry to AI_CHANGELOG.md
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+          VERSION="${{ steps.version.outputs.new }}"
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+
+          # Create the file with a header if it doesn't exist yet
+          if [ ! -f AI_CHANGELOG.md ]; then
+            echo "# AI Changelog" > AI_CHANGELOG.md
+            echo "" >> AI_CHANGELOG.md
+            echo "> Auto-maintained by GitHub Actions. Each entry reflects a versioned push." >> AI_CHANGELOG.md
+            echo "> Newest entries appear first. Do not edit manually." >> AI_CHANGELOG.md
+            echo "" >> AI_CHANGELOG.md
+            echo "---" >> AI_CHANGELOG.md
+            echo "" >> AI_CHANGELOG.md
+          fi
+
+          # Build the new entry
+          NEW_ENTRY="## v$VERSION — $TODAY\n- $COMMIT_MSG\n"
+
+          # Prepend after the header block (line 1–4) so newest is always on top
+          HEADER=$(head -4 AI_CHANGELOG.md)
+          BODY=$(tail -n +5 AI_CHANGELOG.md)
+          printf '%s\n\n## v%s — %s\n- %s\n\n%s\n' \
+            "$HEADER" "$VERSION" "$TODAY" "$COMMIT_MSG" "$BODY" > AI_CHANGELOG.md
+
+          echo "Appended v$VERSION entry to AI_CHANGELOG.md"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet Master.md AI_CHANGELOG.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit updates
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add Master.md AI_CHANGELOG.md
+          git commit -m "chore: bump to v${{ steps.version.outputs.new }} on $(date -u '+%Y-%m-%d') [skip ci]"
+          git push

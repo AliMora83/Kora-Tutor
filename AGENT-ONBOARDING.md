@@ -1,22 +1,40 @@
-# AGENT-ONBOARDING — Kora-Tutor
+# 🤖 Agent Onboarding — Nama Language (Kora-Tutor)
 
-## Welcome, AGENT
-This document defines the constraints and patterns for the Kora project.
+> Read this before doing **any** work in this repo.
 
-## Architecture & Conventions
-- **Framework:** Next.js 14/15 (App Router)
-- **Styling:** Vanilla CSS + Framer Motion for high-end animations
-- **Firebase:** Firestore (data), Storage (audio/PDFs), Auth (family accounts)
-- **AI:** Google Gemini 1.5 Flash for multimodal tutoring and evaluation
-- **Phonology:** 4 clicks (| || ! ǂ) are the priority — anatomical SVG animations required
+---
 
-## Critical Workflows
-- **Authenticity First:** Native audio recordings are sacred. Never use TTS for Khoekhoegowab.
-- **Visual Design:** Follow the warm African aesthetic with deep amber/gold and dark backgrounds.
-- **Sync:** The project status is automatically synced to the Namka Mission Control dashboard via `PROJECT-SYNC.json` generated on every push to `main`.
+## Step 1 — Read These Files First (in order)
 
-## Verification Loop
-1. Run `npm run lint` before committing.
-2. Verify audio/SVG synchronization in the browser.
-3. Validate and update `Master.md` and `AI_CHANGELOG.md` for each significant change.
-4. Ensure no hydration mismatches in the console.
+1. `Master.md` — full project context, stack, phases, decisions
+2. `AI_CHANGELOG.md` — what changed recently and current version
+3. namka-control `Master.md` — MACP protocol and portfolio overview
+
+**Raw URLs:**
+- `https://raw.githubusercontent.com/AliMora83/Kora-Tutor/main/Master.md`
+- `https://raw.githubusercontent.com/AliMora83/Kora-Tutor/main/AI_CHANGELOG.md`
+- `https://raw.githubusercontent.com/AliMora83/namka-control/main/Master.md`
+
+---
+
+## Step 2 — Agent Roles
+
+| Agent | Role |
+|---|---|
+| **Claude** | UX review, product decisions, issues AG-Update.md |
+| **Comet** | Research, audit, documentation |
+| **Gemini** | Architecture, UI proposals |
+| **AG (Antigravity)** | Implementation only — executes AG-Update.md |
+
+---
+
+## Step 3 — Rules
+
+- Do not commit code without an AG-Update.md from Claude
+- Do not modify `Master.md` during implementation — Comet and Claude own it
+- Add a review log entry to `Master.md` at the end of your session
+- Check `AI_CHANGELOG.md` for current version before starting work
+
+---
+
+*Part of the [Namka Control](https://github.com/AliMora83/namka-control) portfolio.*

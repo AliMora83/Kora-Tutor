@@ -41,7 +41,7 @@ export function useAudioOrchestrator() {
 
         const regex = /\[([^\]]+)\]\(audio:(.+?)\)/g;
         
-        let segments: Segment[] = [];
+        const segments: Segment[] = [];
         let lastIndex = 0;
         let match;
 

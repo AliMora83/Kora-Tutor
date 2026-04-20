@@ -45,7 +45,7 @@
 
 **Effort Estimate:** L
 
-**Progress:** 10%
+**Progress:** 20%
 
 ---
 
@@ -265,6 +265,24 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-04-20 — UI & Functionality Review (Antigravity / Gemini)
+
+**Status:** `Agent Reviewed`
+**Reviewed by:** Antigravity (Gemini 3.1 Pro)
+**Scope:** Localhost setup and UI testing for Kora
+
+#### Key Decisions
+1. **Environment Config:** Confirmed `npm run dev` starts correctly in the repository with no build blockers.
+2. **Visual Check:** Validated the live rendering of the Chat Interface and Visual Speech Lab component screens.
+3. **Progress Tracking:** Screenshots captured and committed to `AI_CHANGELOG.md` to establish visual baseline for upcoming design sprints.
+
+#### Next Step
+Ali to proceed with targeted minor updates and review.
+
+> 🔁 **Next:** Ali to ratify or shift to a Builder/Design Lead persona via the relevant workflow.
+
+---
+
 ### 2026-03-29 — Project Architecture Review (Comet / Perplexity)
 
 **Status:** `Agent Reviewed` — pending cross-check
@@ -298,7 +316,7 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 - **Blocker:** None
 - **AI Model:** Claude / Comet (Perplexity)
 - **Effort:** L
-- **Progress:** 10%
+- **Progress:** 20%
 
 ---
 

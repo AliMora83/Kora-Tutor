@@ -101,7 +101,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
 
         // If playing, we split manually to apply highlights
         const regex = /\[([^\]]+)\]\(audio:(.+?)\)/g;
-        let segments: { type: 'text' | 'audio', content: string, filename?: string }[] = [];
+        const segments: { type: 'text' | 'audio', content: string, filename?: string }[] = [];
         let lastIndex = 0;
         let match;
 

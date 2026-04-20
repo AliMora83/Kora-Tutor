@@ -44,7 +44,7 @@ export default function SpeechLab({ nativeFilename, onClose }: SpeechLabProps) {
     async function fetchUrl() {
       setIsLoading(true);
       try {
-        let decoded = decodeURIComponent(nativeFilename!);
+        const decoded = decodeURIComponent(nativeFilename!);
         const path = decoded.startsWith('training_audio/') 
           ? decoded 
           : `training_audio/${decoded}`;
