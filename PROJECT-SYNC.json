@@ -16,16 +16,28 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-06-21T13:24:26Z",
+    "timestamp": "2026-06-21T15:17:35Z",
     "actor": "AliMora83",
-    "commit_message": "docs: sync Master.md to v1.2 MVP scope, add repo-level CLAUDE.md
+    "commit_message": "feat: Sprint 2 & 3 — feedback, feature flags, polish for friend testing
 
-Master.md was stale (v1.1, pre-MVP-rescope); replaced with the current
-MVP-scoped version. Added CLAUDE.md so Claude Code sessions opened
-directly in this repo pick up standing instructions automatically.
+Added thumbs up/down feedback on chat responses (message_feedback
+collection + matching Firestore rule), introduced a feature-flag
+module to gate all V2 surfaces (Speech Lab, progress dashboard, XP)
+off by default without deleting code, and gave /progress a clean
+placeholder instead of mock curriculum data when disabled.
+
+Ran a full regression pass (all 3 starter prompts, feedback writes,
+desktop + mobile viewport), built a review_feedback.ts script so Ali
+can read ratings without the Firebase console, and fixed a real
+console error: Firebase Auth's signInWithPopup was blocked by
+Next.js's default COOP header, now set to same-origin-allow-popups.
+Also completed the @google/genai SDK migration in sync_audio.ts,
+which had been missed in Sprint 1's route-level migration.
+
+Logged the Sprint 2 & 3 review in Master.md.
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>",
-    "sha": "b2263af"
+    "sha": "52de513"
   },
   "last_updated": "2026-06-21"
 }
