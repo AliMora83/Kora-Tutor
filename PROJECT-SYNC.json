@@ -16,10 +16,16 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-04-20T18:21:45Z",
+    "timestamp": "2026-06-21T13:24:26Z",
     "actor": "AliMora83",
-    "commit_message": "chore: clean up unused default SVGs",
-    "sha": "b7cab5d"
+    "commit_message": "docs: sync Master.md to v1.2 MVP scope, add repo-level CLAUDE.md
+
+Master.md was stale (v1.1, pre-MVP-rescope); replaced with the current
+MVP-scoped version. Added CLAUDE.md so Claude Code sessions opened
+directly in this repo pick up standing instructions automatically.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>",
+    "sha": "b2263af"
   },
-  "last_updated": "2026-04-20"
+  "last_updated": "2026-06-21"
 }
