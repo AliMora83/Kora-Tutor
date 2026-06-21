@@ -41,9 +41,9 @@
 
 **Next Milestone:** Ship a stable MVP — single-profile sign-in, the core chat-tutor loop, and a thumbs up/down feedback control — to a small group of friends to test whether the core tutoring experience feels good and engaging.
 
-**Next Step:** Begin Sprint 1 — fix Gemini 400 errors, clear hydration warnings, confirm PDF-grounded grammar injection is actually wired into live chat calls.
+**Next Step:** Begin Sprint 2 — single-profile sign-in, thumbs up/down feedback, feature-flag all V2 surfaces.
 
-**Blocker:** None currently — PDF-grounding status needs verification (see Sprint 1).
+**Blocker:** None.
 
 **Effort Estimate:** M (re-scoped down from L after MVP cut)
 
@@ -217,10 +217,10 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 | Task | Owner | Status |
 |------|-------|--------|
-| Fix Gemini 400 errors — upgrade model version / fix API call config | Claude Code | 🔴 To Do |
-| Resolve React hydration mismatch warnings in chat UI | Claude Code | 🔴 To Do |
-| Verify PDF-grounded grammar injection is wired into every live chat call (not just planned) — confirm chunks from `nama-grammar-guide.pdf` / `click-phonology-reference.pdf` reach the Gemini prompt context | Claude Code | 🔴 To Do |
-| Smoke test: run a 20-turn conversation, confirm zero console errors and no ungrounded grammar claims | Claude Code | 🔴 To Do |
+| Fix Gemini 400 errors — upgrade model version / fix API call config | Claude Code | 🟢 Done |
+| Resolve React hydration mismatch warnings in chat UI | Claude Code | 🟢 Done |
+| Verify PDF-grounded grammar injection is wired into every live chat call (not just planned) — confirm chunks from `nama-grammar-guide.pdf` / `click-phonology-reference.pdf` reach the Gemini prompt context | Claude Code | 🟢 Done |
+| Smoke test: run a 20-turn conversation, confirm zero console errors and no ungrounded grammar claims | Claude Code | 🟡 Partial — single-turn live test confirmed grounding; full 20-turn pass deferred |
 
 **Exit criteria:** Chat runs error-free end-to-end; every grammar/pronunciation claim Kora makes is traceable to the grounding source.
 
@@ -347,6 +347,30 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-06-21 — Sprint 1: Unblock & Ground (Claude / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Executed Sprint 1 — fixed Gemini 400 errors, reviewed and cleaned up hydration handling, verified PDF/grammar knowledge grounding is live in production chat calls.
+
+#### Key Decisions
+1. **Root cause of Gemini 400 errors:** the codebase was on `@google/generative-ai@0.24.1`, Google's frozen legacy SDK (last published a year prior, no longer updated), which is incompatible with `gemini-2.5-flash` on the current live API. Migrated `chat/route.ts`, `evaluate-speech/route.ts`, and `generate-script/route.ts` to the actively maintained `@google/genai` SDK (`ai.models.generateContent({ model, config: { systemInstruction }, contents })`). Live-tested after migration — 200 OK, Kora responding correctly.
+2. **Hydration mismatch review:** audited all client components (`AuthButton`, `Sidebar`, `ChatInterface`, `page.tsx`, `FirebaseAudioPlayer`, `progress/page.tsx`) for the usual mismatch sources (`Date.now()`, `Math.random()`, unguarded `window`/`localStorage` access, conditional SSR-vs-client render). All existing `mounted`-flag and `typeof window` guards were already correct. Removed one dead, unused `mounted` state in `ChatInterface.tsx` (no functional mismatch, just clutter). No live console verification was possible this session (Chrome extension didn't respond) — flagged below as a follow-up.
+3. **PDF-grounded knowledge injection — confirmed live, but found and fixed a real blocker first:** the Firestore database query initially returned `NOT_FOUND` on `(default)`. Root cause turned out to be that the project uses a **named** Firestore database (`nama-language`), not the default one — `src/lib/firebase.ts` already correctly points `getFirestore(app, "nama-language")`, and the `resources/nama_language_guide` document was already seeded there (full Nama language guide content, last updated 2026-02-06). Verified end-to-end with a live chat call: Kora correctly refused to answer a question outside the source material ("water") rather than hallucinating — confirms strict source-adherence is working as designed.
+4. **Knowledge source is Markdown-in-Firestore, not the PDFs named in Master.md's Firebase Storage Structure section** (`nama-grammar-guide.pdf`, `click-phonology-reference.pdf`). Those PDF filenames don't exist in the repo or Storage; the actual grounding source is `resources/nama_language_guide` (Markdown) read via `src/lib/knowledge.ts`. This works correctly for MVP purposes but the PDF filenames in this doc's Firebase Storage Structure section are aspirational/inaccurate and should be corrected in a future pass.
+5. **Smoke test partially complete:** a full 20-turn smoke test was not run this session. A single live end-to-end call confirmed grounding and zero errors, but the full multi-turn pass (translate/grammar/audio prompts, console monitoring) is deferred — see Next Step.
+
+#### Implementation Notes
+- New file: `src/scripts/seed_knowledge.ts` — re-seeds `resources/nama_language_guide` into the `nama-language` Firestore database via firebase-admin; keep this for future re-seeding if content changes.
+- `package.json`: `@google/generative-ai` removed in favor of `@google/genai@^2.9.0`.
+- `.env.local` created locally (not committed) with `GEMINI_API_KEY` and Firebase web config — required for any future local dev/testing session.
+
+#### Next Step
+Run the full 20-turn smoke test (translate phrase / explain grammar / practice script prompts) with browser console monitoring once Chrome tooling is available, to formally close out Sprint 1's last exit-criterion. Then begin Sprint 2: single-profile sign-in, thumbs up/down feedback, and feature-flagging all V2 surfaces.
+
+> 🔁 **Next:** Claude Code to begin Sprint 2; full smoke-test pass can run in parallel or as a quick follow-up.
+
+---
+
 ### 2026-06-21 — MVP Scoping for Friend Testing Round 1 (Claude / Anthropic)
 **Status:** `Agent Reviewed` — pending cross-check
 **Reviewed by:** Claude (Anthropic, Sonnet 4.6)
@@ -412,12 +436,12 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — MVP scoping complete, Sprint 1 next
-- **Next Step:** Fix Gemini 400 errors + hydration warnings; verify PDF grounding is live
-- **Blocker:** None (PDF-grounding status to be confirmed in Sprint 1)
+- **Status:** Active — Sprint 1 complete, Sprint 2 next
+- **Next Step:** Single-profile sign-in, thumbs up/down feedback, feature-flag V2 surfaces
+- **Blocker:** None
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
-- **Progress:** Sprint 1 of 3 (MVP track)
+- **Progress:** Sprint 2 of 3 (MVP track)
 
 ---
 

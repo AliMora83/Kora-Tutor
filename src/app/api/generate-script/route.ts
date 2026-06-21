@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { getNamaKnowledge } from "@/lib/knowledge";
 
@@ -13,7 +13,8 @@ export async function POST(req: Request) {
             );
         }
 
-        const genAI = new GoogleGenerativeAI(apiKey);
+        // Initialize Gemini (new @google/genai SDK)
+        const ai = new GoogleGenAI({ apiKey });
         const { scenario, style } = await req.json();
 
         // 1. Fetch Knowledge explicitly from Firestore (via helper)
@@ -72,10 +73,11 @@ export async function POST(req: Request) {
         - For every Nama line, provide the English translation in parentheses.
         `;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        const result = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+        });
+        const text = result.text ?? "";
 
         return NextResponse.json({ script: text });
 

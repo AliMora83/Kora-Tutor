@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -12,8 +12,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing data" }, { status: 400 });
         }
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Initialize Gemini (new @google/genai SDK)
+        const ai = new GoogleGenAI({ apiKey });
 
         // Convert file to base64 for Gemini
         const arrayBuffer = await audioFile.arrayBuffer();
@@ -37,23 +37,29 @@ export async function POST(req: Request) {
             }
         `;
 
-        const result = await model.generateContent([
-            {
-                inlineData: {
-                    mimeType: audioFile.type,
-                    data: base64Audio
-                }
-            },
-            { text: prompt }
-        ]);
+        const result = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: [{
+                role: "user",
+                parts: [
+                    {
+                        inlineData: {
+                            mimeType: audioFile.type,
+                            data: base64Audio
+                        }
+                    },
+                    { text: prompt }
+                ]
+            }]
+        });
 
-        const responseText = result.response.text();
+        const responseText = result.text ?? "";
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         const cleanJson = jsonMatch ? jsonMatch[0] : responseText;
-        
+
         return NextResponse.json(JSON.parse(cleanJson));
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Speech Evaluation Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }

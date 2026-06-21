@@ -1,8 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { getNamaKnowledge } from "@/lib/knowledge";
 import * as fs from 'fs';
 import * as path from 'path';
+
 export async function POST(req: Request) {
     try {
         const apiKey = process.env.GEMINI_API_KEY;
@@ -16,8 +17,8 @@ export async function POST(req: Request) {
             );
         }
 
-        // Initialize Gemini
-        const genAI = new GoogleGenerativeAI(apiKey);
+        // Initialize Gemini (new @google/genai SDK)
+        const ai = new GoogleGenAI({ apiKey });
 
         // Parse request
         const body = await req.json();
@@ -68,22 +69,16 @@ export async function POST(req: Request) {
        - Tell them: "Hold the mic, say it back to me, and let's see how close you get to the authentic sound!"
     `;
 
-        // Use Gemini 2.5 Flash (Confirmed Available)
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-flash",
-            systemInstruction: systemInstruction
-        });
-
         // Load Audio Files if they exist
         // NOTE: Gemini File API URIs expire every 48h. Re-run `npx tsx src/scripts/sync_audio.ts` if audio stops working.
         const audioRefsPath = path.join(process.cwd(), 'src/data/gemini_audio_refs.json');
-        let fileParts: any[] = [];
+        let fileParts: Array<{ fileData: { mimeType: string; fileUri: string } }> = [];
         if (fs.existsSync(audioRefsPath)) {
             const fileData = fs.readFileSync(audioRefsPath, 'utf8');
             const audioData = JSON.parse(fileData);
             
             // Limit to 20 files to avoid hitting request limits/timeouts
-            fileParts = audioData.slice(0, 20).map((file: any) => ({
+            fileParts = audioData.slice(0, 20).map((file: { mimeType: string; uri: string }) => ({
                 fileData: {
                     mimeType: file.mimeType,
                     fileUri: file.uri
@@ -93,30 +88,38 @@ export async function POST(req: Request) {
         }
 
         console.log(`📤 Sending prompt to Gemini (Model: gemini-2.5-flash) with Knowledge Injection...`);
-        
+
         // Try with audio files injected; fall back to text-only if URIs have expired
-        let result;
+        let responseText: string;
         try {
-            const contentPartsWithAudio = [
+            const contentParts = [
                 ...fileParts,
                 { text: prompt }
             ];
-            result = await model.generateContent(contentPartsWithAudio);
+            const result = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                config: { systemInstruction },
+                contents: [{ role: "user", parts: contentParts }],
+            });
+            responseText = result.text ?? "";
         } catch (audioError: unknown) {
             const msg = (audioError as Error).message || '';
             // Expired Gemini File API URIs produce a 400/404 — retry text-only
             if (fileParts.length > 0 && (msg.includes('400') || msg.includes('404') || msg.includes('not found') || msg.includes('File'))) {
                 console.warn('⚠️  Gemini audio URIs appear expired. Falling back to text-only. Re-run `npx tsx src/scripts/sync_audio.ts` to refresh.');
-                result = await model.generateContent([{ text: prompt }]);
+                const fallback = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    config: { systemInstruction },
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                });
+                responseText = fallback.text ?? "";
             } else {
                 throw audioError;
             }
         }
-        const response = await result.response;
-        const text = response.text();
-        console.log("📥 Received response from Gemini.");
 
-        return NextResponse.json({ role: 'assistant', content: text });
+        console.log("📥 Received response from Gemini.");
+        return NextResponse.json({ role: 'assistant', content: responseText });
     } catch (error: unknown) {
         console.error("🔥 Gemini API Fatal Error:", error);
         return NextResponse.json(

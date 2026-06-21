@@ -30,13 +30,8 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
     const { isRecording: isBasicRecording, audioBlob, startRecording: startBasicRecording, stopRecording: stopBasicRecording, clearRecording } = useBasicAudioRecorder();
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [evaluation, setEvaluation] = useState<any>(null);
-    const [mounted, setMounted] = useState(false);
     const [showSpeechLab, setShowSpeechLab] = useState(false);
     const [selectedNativeAudio, setSelectedNativeAudio] = useState<string | null>(null);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
