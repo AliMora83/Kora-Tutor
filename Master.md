@@ -41,7 +41,7 @@
 
 **Next Milestone:** Ship a stable MVP — single-profile sign-in, the core chat-tutor loop, and a thumbs up/down feedback control — to a small group of friends to test whether the core tutoring experience feels good and engaging.
 
-**Next Step:** Begin Sprint 2 — single-profile sign-in, thumbs up/down feedback, feature-flag all V2 surfaces.
+**Next Step:** Push to `main`, verify the live Vercel deploy and production env vars, then this MVP round is ready for friend testing.
 
 **Blocker:** None.
 
@@ -230,10 +230,10 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 | Task | Owner | Status |
 |------|-------|--------|
-| Build single-profile sign-in (email + Google) — no parent/child split, simplified user doc shape | Claude Code | 🔴 To Do |
-| Add thumbs up/down control under each Kora response; write to a `message_feedback` Firestore collection (`userId`, `messageId`, `rating`, `timestamp`) | Claude Code | 🔴 To Do |
-| Feature-flag and hide all V2 surfaces: Speech Lab button/route, curriculum map, XP/streaks/badges UI, Kid/Parent mode toggle, offline/PWA prompts, progress dashboard — flags off by default, code retained in place | Claude Code | 🔴 To Do |
-| Update or hide the `/progress` page so it doesn't reference unbuilt curriculum data | Claude Code | 🔴 To Do |
+| Build single-profile sign-in (email + Google) — no parent/child split, simplified user doc shape | Claude Code | 🟢 Done — was already implemented |
+| Add thumbs up/down control under each Kora response; write to a `message_feedback` Firestore collection (`userId`, `messageId`, `rating`, `timestamp`) | Claude Code | 🟢 Done |
+| Feature-flag and hide all V2 surfaces: Speech Lab button/route, curriculum map, XP/streaks/badges UI, Kid/Parent mode toggle, offline/PWA prompts, progress dashboard — flags off by default, code retained in place | Claude Code | 🟢 Done |
+| Update or hide the `/progress` page so it doesn't reference unbuilt curriculum data | Claude Code | 🟢 Done |
 
 **Exit criteria:** A new user can sign in, chat, and rate responses; every V2 feature is invisible to testers but not deleted from the codebase.
 
@@ -243,10 +243,10 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 | Task | Owner | Status |
 |------|-------|--------|
-| Full regression pass: sign-in → chat → all 3 starter prompts → feedback rating, on desktop and mobile viewport | Claude Code | 🔴 To Do |
-| Build a lightweight feedback review path (simple Firestore query/script or a minimal admin-only page) so Ali can read thumbs ratings without manually digging through the Firebase console | Claude Code | 🔴 To Do |
-| Deploy to Vercel; verify live URL build matches local, confirm production env vars (Gemini key, Firebase config) are correct | Claude Code | 🔴 To Do |
-| Final console-error sweep + mobile responsiveness check | Claude Code | 🔴 To Do |
+| Full regression pass: sign-in → chat → all 3 starter prompts → feedback rating, on desktop and mobile viewport | Claude Code | 🟢 Done |
+| Build a lightweight feedback review path (simple Firestore query/script or a minimal admin-only page) so Ali can read thumbs ratings without manually digging through the Firebase console | Claude Code | 🟢 Done |
+| Deploy to Vercel; verify live URL build matches local, confirm production env vars (Gemini key, Firebase config) are correct | Claude Code | 🟡 Pending — auto-deploys via Vercel's GitHub integration on push to `main`; verify live after this push |
+| Final console-error sweep + mobile responsiveness check | Claude Code | 🟢 Done — found and fixed a real COOP console error from Firebase Auth popup |
 
 **Exit criteria:** The live link works cleanly for a first-time, signed-out visitor through to a rated conversation, on both desktop and mobile.
 
@@ -347,6 +347,34 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-06-21 — Sprint 2 & 3: Identity, Feedback, Polish (Claude / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Completed Sprint 2 (sign-in, feedback, feature flags, progress page) and Sprint 3 (regression pass, feedback review tooling, console/mobile sweep). Deploy-to-Vercel verification deferred to immediately after this push.
+
+#### Key Decisions
+1. **Sign-in was already built** — Google sign-in via `signInWithPopup` was fully functional going into Sprint 2 (`AuthButton.tsx`); no family/parent-child model existed, so MVP single-profile scope was already satisfied. No code changes needed there.
+2. **Feedback control:** added thumbs up/down buttons to each Kora response in `ChatInterface.tsx`, writing to `message_feedback/{userId}_{messageId}` (deterministic ID so re-rating overwrites rather than duplicating). Added a matching Firestore rule (`create`/`update` only if `request.auth.uid` matches `userId` and the doc ID matches the expected composite key; `read`/`delete` denied to all clients) and deployed it live.
+3. **Feature flags introduced from scratch** — `src/lib/featureFlags.ts`, three flags (`SPEECH_LAB`, `PROGRESS_DASHBOARD`, `XP_SYSTEM`), all default off via env vars. Gated: Speech Lab UI + mic recorder + the system-prompt section that told Kora to promote the mic (chat/route.ts), the Progress sidebar link, and the XP toast/increment logic. None of the underlying code was deleted, per standing rule.
+4. **`/progress` route is still directly reachable by URL** even with the nav link hidden, so the page itself now checks the flag and shows a short "still being built" placeholder instead of mock curriculum/XP data when off — avoids a tester finding half-built lesson cards by typing the URL.
+5. **Feedback review tooling:** built `src/scripts/review_feedback.ts` using the operator's own `gcloud auth print-access-token` (not a service-account key) against the Firestore REST API — avoids introducing a new admin-only web route/auth surface for a one-person, one-sprint need. Verified end-to-end by seeding and then deleting a synthetic test record.
+6. **Regression pass:** all 3 starter prompts (Translate Phrase, Explain Grammar, Practice Script) tested live and grounded correctly; `npm run build` (production build, same as Vercel will run) succeeds cleanly; all routes return 200.
+7. **Found and fixed a real console error during the sweep, not just warnings:** Firebase Auth's `signInWithPopup` calls `window.closed` on the popup, which Next.js's default same-origin COOP header blocks — this was throwing 4 red `Cross-Origin-Opener-Policy` errors on every sign-in. Fixed via `headers()` in `next.config.ts` setting `Cross-Origin-Opener-Policy: same-origin-allow-popups` globally. Verified fixed live (confirmed by Ali after server restart). Also cleaned up two `next/image` warnings (missing `sizes` prop) on the logo across `Sidebar.tsx` and `ChatInterface.tsx`.
+8. **Completed the SDK migration started in Sprint 1** — `src/scripts/sync_audio.ts` was still on the deprecated `@google/generative-ai` SDK (missed in the original 3-route migration since it's a standalone script, not an API route). Migrated to `@google/genai` and switched from a `service-account.json` file to Application Default Credentials, matching `seed_knowledge.ts`'s pattern.
+9. **Vercel deploy is automatic** — no `vercel.json` or linked CLI project found; the live URL deploys via Vercel's GitHub integration on push to `main`. "Deploy to Vercel" is therefore not a separate manual step — it happens as a side effect of this sprint's push, and production env vars will be verified against the live URL immediately after.
+
+#### Implementation Notes
+- New: `src/lib/featureFlags.ts`, `src/scripts/review_feedback.ts`.
+- Firestore rules redeployed live (`firebase deploy --only firestore:rules --project nama-language`) — note the active `firebase use` project alias was stale (pointed at an unrelated project, `openclaw-mission-control-d1fa8`); always pass `--project nama-language` explicitly rather than relying on `firebase use` in this environment.
+- `Message` type gained an optional `id` field (`crypto.randomUUID()` generated at send-time in `page.tsx`) so feedback can reference a stable message ID; legacy messages without an ID fall back to `idx-{index}` in the UI.
+
+#### Next Step
+Push to `main`, confirm the Vercel deploy picks up cleanly, and verify production env vars (`GEMINI_API_KEY`, Firebase config) match what's expected on the live URL. Then this MVP test-ready milestone is complete pending Ali's go-ahead to share the link with friends.
+
+> 🔁 **Next:** Claude Code to verify the live Vercel deploy post-push; Ali to ratify Sprints 2 & 3 or flag anything from manual testing.
+
+---
+
 ### 2026-06-21 — Sprint 1: Unblock & Ground (Claude / Anthropic)
 **Status:** `Agent Reviewed` — pending cross-check
 **Reviewed by:** Claude (Anthropic, Sonnet 4.6)
@@ -436,12 +464,12 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — Sprint 1 complete, Sprint 2 next
-- **Next Step:** Single-profile sign-in, thumbs up/down feedback, feature-flag V2 surfaces
+- **Status:** Active — Sprints 1–3 complete, verifying live deploy next
+- **Next Step:** Verify Vercel deploy + production env vars post-push
 - **Blocker:** None
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
-- **Progress:** Sprint 2 of 3 (MVP track)
+- **Progress:** 3 of 3 MVP sprints complete
 
 ---
 

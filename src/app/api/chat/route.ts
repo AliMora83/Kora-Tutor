@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getNamaKnowledge } from "@/lib/knowledge";
 import * as fs from 'fs';
 import * as path from 'path';
+import { FEATURE_FLAGS } from "@/lib/featureFlags";
 
 export async function POST(req: Request) {
     try {
@@ -62,11 +63,12 @@ export async function POST(req: Request) {
        - Example: If the user asks for the Alveolar click, output \`[Play The Alveolar click](audio:1-The Alveolar click.m4a)\`
        - Please use exact filenames from the list above. Do NOT hallucinate audio files.
        - This will trigger a custom audio player on their screen so they can listen to the pronunciation!
-
-    7. **Speech Lab & Practice**: 
-       - Encourage students to use the **Microphone icon** 🎙️ below to record themselves. 
+    ${FEATURE_FLAGS.SPEECH_LAB ? `
+    7. **Speech Lab & Practice**:
+       - Encourage students to use the **Microphone icon** 🎙️ below to record themselves.
        - You can then evaluate their pronunciation, analyze their clicks, and provide a score!
        - Tell them: "Hold the mic, say it back to me, and let's see how close you get to the authentic sound!"
+    ` : ''}
     `;
 
         // Load Audio Files if they exist

@@ -3,10 +3,38 @@
 import React, { useEffect, useState } from 'react';
 import { getHydratedLessons } from '@/lib/progress';
 import { Lesson } from '@/data/lessons';
-import { Trophy, Star, CheckCircle } from 'lucide-react';
+import { Trophy, Star, CheckCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 export default function ProgressPage() {
+    if (!FEATURE_FLAGS.PROGRESS_DASHBOARD) {
+        return (
+            <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-4">
+                <div className="max-w-md text-center space-y-4">
+                    <div className="inline-flex p-3 bg-secondary/10 rounded-2xl text-secondary mx-auto">
+                        <Sparkles size={28} />
+                    </div>
+                    <h1 className="text-2xl font-serif text-white">Progress tracking is on its way</h1>
+                    <p className="text-gray-400">
+                        The structured curriculum and XP system are still being built. For now, just chat with Kora —
+                        that&apos;s all we&apos;re testing this round.
+                    </p>
+                    <Link
+                        href="/"
+                        className="inline-block bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                    >
+                        Back to Chat
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    return <FullProgressDashboard />;
+}
+
+function FullProgressDashboard() {
     const [lessons, setLessons] = useState<Lesson[]>([]);
 
     // Initial load — deferred to avoid synchronous setState on mount (hydration guard)

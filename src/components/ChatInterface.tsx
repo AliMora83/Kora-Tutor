@@ -4,12 +4,16 @@ import AuthButton from './AuthButton';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import FirebaseAudioPlayer from './FirebaseAudioPlayer';
-import { Send, Plus, Trash2, Volume2, Square, Mic, X, Check, RefreshCw } from 'lucide-react';
+import { Send, Plus, Trash2, Volume2, Square, Mic, X, Check, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useAudioOrchestrator } from '@/hooks/useAudioOrchestrator';
 import { useAudioRecorder as useBasicAudioRecorder } from '@/hooks/useAudioRecorder';
 import SpeechLab from './SpeechLab/SpeechLab';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export type Message = {
+    id?: string;
     role: 'user' | 'assistant';
     content: string;
 };
@@ -22,9 +26,10 @@ interface ChatInterfaceProps {
     isLoading: boolean;
     onNewChat: () => void;
     onDeleteChat: () => void;
+    userId: string | null;
 }
 
-export function ChatInterface({ messages, input, setInput, handleSend, isLoading, onNewChat, onDeleteChat }: ChatInterfaceProps) {
+export function ChatInterface({ messages, input, setInput, handleSend, isLoading, onNewChat, onDeleteChat, userId }: ChatInterfaceProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { playMessage, stop, playingMessageId, activeSegmentIndex } = useAudioOrchestrator();
     const { isRecording: isBasicRecording, audioBlob, startRecording: startBasicRecording, stopRecording: stopBasicRecording, clearRecording } = useBasicAudioRecorder();
@@ -32,6 +37,22 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
     const [evaluation, setEvaluation] = useState<any>(null);
     const [showSpeechLab, setShowSpeechLab] = useState(false);
     const [selectedNativeAudio, setSelectedNativeAudio] = useState<string | null>(null);
+    const [feedbackGiven, setFeedbackGiven] = useState<Record<string, 'up' | 'down'>>({});
+
+    const handleFeedback = async (messageId: string, rating: 'up' | 'down') => {
+        if (!userId) return;
+        setFeedbackGiven(prev => ({ ...prev, [messageId]: rating }));
+        try {
+            await setDoc(doc(db, 'message_feedback', `${userId}_${messageId}`), {
+                userId,
+                messageId,
+                rating,
+                timestamp: serverTimestamp(),
+            });
+        } catch (err) {
+            console.error('Failed to save feedback:', err);
+        }
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -211,16 +232,41 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                                                 src="/logo.png"
                                                 alt="Kora Logo"
                                                 fill
+                                                sizes="40px"
                                                 className="object-cover"
                                             />
                                         </div>
-                                        <button
-                                            onClick={() => playingMessageId === idx ? stop() : playMessage(idx, msg.content)}
-                                            title={playingMessageId === idx ? "Stop Read Aloud" : "Read Aloud"}
-                                            className="text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors p-2 rounded-full"
-                                        >
-                                            {playingMessageId === idx ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
-                                        </button>
+                                        <div className="flex items-center gap-1">
+                                            {(() => {
+                                                const messageId = msg.id ?? `idx-${idx}`;
+                                                const given = feedbackGiven[messageId];
+                                                return (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleFeedback(messageId, 'up')}
+                                                            title="Good response"
+                                                            className={`p-2 rounded-full transition-colors ${given === 'up' ? 'text-secondary bg-secondary/10' : 'text-gray-400 hover:text-secondary hover:bg-secondary/10'}`}
+                                                        >
+                                                            <ThumbsUp className={`w-4 h-4 ${given === 'up' ? 'fill-current' : ''}`} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleFeedback(messageId, 'down')}
+                                                            title="Bad response"
+                                                            className={`p-2 rounded-full transition-colors ${given === 'down' ? 'text-red-400 bg-red-400/10' : 'text-gray-400 hover:text-red-400 hover:bg-red-400/10'}`}
+                                                        >
+                                                            <ThumbsDown className={`w-4 h-4 ${given === 'down' ? 'fill-current' : ''}`} />
+                                                        </button>
+                                                    </>
+                                                );
+                                            })()}
+                                            <button
+                                                onClick={() => playingMessageId === idx ? stop() : playMessage(idx, msg.content)}
+                                                title={playingMessageId === idx ? "Stop Read Aloud" : "Read Aloud"}
+                                                className="text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors p-2 rounded-full"
+                                            >
+                                                {playingMessageId === idx ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                                 {renderContent(msg, idx)}
@@ -237,6 +283,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                                             src="/logo.png"
                                             alt="Kora Logo"
                                             fill
+                                            sizes="32px"
                                             className="object-cover"
                                         />
                                     </div>
@@ -252,10 +299,10 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
             {/* Bottom Input Area */}
             <div className={`p-4 md:p-6 mx-auto w-full max-w-4xl space-y-4 ${showSpeechLab ? 'relative z-50' : ''}`}>
                 
-                {/* Speech Lab Toggle */}
-                {!showSpeechLab && (
+                {/* Speech Lab Toggle — V2, gated */}
+                {FEATURE_FLAGS.SPEECH_LAB && !showSpeechLab && (
                     <div className="flex justify-center">
-                         <button 
+                         <button
                             onClick={() => {
                                 // Find last audio to analyze if none selected
                                 if (!selectedNativeAudio) {
@@ -273,16 +320,16 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                     </div>
                 )}
 
-                {/* New Visual Speech Lab Component */}
-                {showSpeechLab && (
-                    <SpeechLab 
-                        nativeFilename={selectedNativeAudio} 
-                        onClose={() => setShowSpeechLab(false)} 
+                {/* New Visual Speech Lab Component — V2, gated */}
+                {FEATURE_FLAGS.SPEECH_LAB && showSpeechLab && (
+                    <SpeechLab
+                        nativeFilename={selectedNativeAudio}
+                        onClose={() => setShowSpeechLab(false)}
                     />
                 )}
 
-                {/* Old Speech Lab Overlay (Kept for basic evaluation if needed, but could be merged) */}
-                {!showSpeechLab && (audioBlob || isBasicRecording || evaluation) && (
+                {/* Old Speech Lab Overlay (Kept for basic evaluation if needed, but could be merged) — V2, gated */}
+                {FEATURE_FLAGS.SPEECH_LAB && !showSpeechLab && (audioBlob || isBasicRecording || evaluation) && (
                     <div className="bg-[#1a1a1a]/80 backdrop-blur-xl border border-secondary/20 rounded-3xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
                         <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
@@ -335,17 +382,19 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                 )}
 
                 <div className="flex gap-3">
-                    <button
-                        onMouseDown={startBasicRecording}
-                        onMouseUp={stopBasicRecording}
-                        onMouseLeave={stopBasicRecording}
-                        onTouchStart={(e) => { e.preventDefault(); startBasicRecording(); }}
-                        onTouchEnd={(e) => { e.preventDefault(); stopBasicRecording(); }}
-                        className={`p-4 rounded-3xl transition-all ${isBasicRecording ? 'bg-red-500 text-white scale-110 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-[#2a2a2a] text-gray-400 hover:text-secondary hover:border-secondary/30 border border-white/5'}`}
-                        title="Hold to Record your Nama"
-                    >
-                        <Mic size={24} className={isBasicRecording ? 'animate-pulse' : ''} />
-                    </button>
+                    {FEATURE_FLAGS.SPEECH_LAB && (
+                        <button
+                            onMouseDown={startBasicRecording}
+                            onMouseUp={stopBasicRecording}
+                            onMouseLeave={stopBasicRecording}
+                            onTouchStart={(e) => { e.preventDefault(); startBasicRecording(); }}
+                            onTouchEnd={(e) => { e.preventDefault(); stopBasicRecording(); }}
+                            className={`p-4 rounded-3xl transition-all ${isBasicRecording ? 'bg-red-500 text-white scale-110 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-[#2a2a2a] text-gray-400 hover:text-secondary hover:border-secondary/30 border border-white/5'}`}
+                            title="Hold to Record your Nama"
+                        >
+                            <Mic size={24} className={isBasicRecording ? 'animate-pulse' : ''} />
+                        </button>
+                    )}
 
                     <div className="relative flex-1 bg-[#2a2a2a] rounded-3xl border border-white/5 focus-within:border-secondary/50 transition-colors">
                         <input
@@ -366,9 +415,11 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                         </button>
                     </div>
                 </div>
-                <p className="text-center text-gray-600 text-xs">
-                    Hold the mic 🎙️ to practice your pronunciation with Kora!
-                </p>
+                {FEATURE_FLAGS.SPEECH_LAB && (
+                    <p className="text-center text-gray-600 text-xs">
+                        Hold the mic 🎙️ to practice your pronunciation with Kora!
+                    </p>
+                )}
             </div>
         </div>
     );

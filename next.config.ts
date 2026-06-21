@@ -9,6 +9,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Firebase Auth's signInWithPopup checks window.closed on the popup,
+  // which the default same-origin COOP header blocks.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -19,5 +19,14 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // Chat response feedback — user can only write their own rating, no client reads
+    match /message_feedback/{feedbackId} {
+      allow read: if false;
+      allow create, update: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && feedbackId == request.auth.uid + '_' + request.resource.data.messageId;
+      allow delete: if false;
+    }
   }
 }

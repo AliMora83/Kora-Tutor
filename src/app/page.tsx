@@ -7,6 +7,7 @@ import { checkAndIncrementProgress } from '@/lib/progress';
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc, arrayUnion } from 'firebase/firestore';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 interface Toast {
   message: string;
@@ -72,7 +73,7 @@ export default function HomePage() {
     if (!input.trim() || isLoading) return;
 
     const userText = input;
-    const userMsg: Message = { role: 'user', content: userText };
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: userText };
 
     // UI Updates
     setMessages(prev => [...prev, userMsg]);
@@ -83,10 +84,12 @@ export default function HomePage() {
     // Persist User Message
     await saveMessageToFirestore(userMsg);
 
-    // Progress Check
-    const updatedLesson = checkAndIncrementProgress(userText);
-    if (updatedLesson) {
-      showToast(`${updatedLesson.title} +1 XP`);
+    // Progress Check — V2, gated
+    if (FEATURE_FLAGS.XP_SYSTEM) {
+      const updatedLesson = checkAndIncrementProgress(userText);
+      if (updatedLesson) {
+        showToast(`${updatedLesson.title} +1 XP`);
+      }
     }
 
     try {
@@ -99,7 +102,7 @@ export default function HomePage() {
       const data = await response.json();
 
       if (response.ok) {
-        const botMsg: Message = { role: 'assistant', content: data.content };
+        const botMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.content };
         setMessages(prev => [...prev, botMsg]);
         // Persist Bot Message
         await saveMessageToFirestore(botMsg);
@@ -109,6 +112,7 @@ export default function HomePage() {
     } catch (error: unknown) {
       const err = error as Error;
       setMessages(prev => [...prev, {
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: `⚠️ ${err.message || "Connection Error."}`
       }]);
@@ -159,6 +163,7 @@ export default function HomePage() {
         isLoading={isLoading}
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
+        userId={user?.uid ?? null}
       />
 
       {/* Success Toast */}

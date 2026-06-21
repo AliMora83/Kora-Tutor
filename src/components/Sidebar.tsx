@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MessageSquare, BarChart2, Settings } from 'lucide-react';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -32,6 +33,8 @@ export default function Sidebar() {
                             src="/logo.png"
                             alt="Kora Logo"
                             fill
+                            priority
+                            sizes="48px"
                             className="object-cover"
                         />
                     </div>
@@ -47,12 +50,14 @@ export default function Sidebar() {
                     active={isActive('/')}
                 />
 
-                <NavItem
-                    href="/progress"
-                    icon={<BarChart2 size={20} />}
-                    label="Progress"
-                    active={isActive('/progress')}
-                />
+                {FEATURE_FLAGS.PROGRESS_DASHBOARD && (
+                    <NavItem
+                        href="/progress"
+                        icon={<BarChart2 size={20} />}
+                        label="Progress"
+                        active={isActive('/progress')}
+                    />
+                )}
 
                 {/* Spacer pushes settings to bottom on desktop */}
                 <div className="hidden md:block md:flex-1" />
