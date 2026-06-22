@@ -11,6 +11,7 @@ import SpeechLab from './SpeechLab/SpeechLab';
 import { FEATURE_FLAGS } from '@/lib/featureFlags';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getAudioLibrary, injectAudioLinks, AudioEntry } from '@/lib/audioLibrary';
 
 export type Message = {
     id?: string;
@@ -38,6 +39,15 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
     const [showSpeechLab, setShowSpeechLab] = useState(false);
     const [selectedNativeAudio, setSelectedNativeAudio] = useState<string | null>(null);
     const [feedbackGiven, setFeedbackGiven] = useState<Record<string, 'up' | 'down'>>({});
+    const [audioLibrary, setAudioLibrary] = useState<Map<string, AudioEntry>>(new Map());
+
+    // Kick off the one-time Storage listing at chat-mount ("app startup" for this surface)
+    // so the audio map is ready (or close to it) by the time messages render.
+    useEffect(() => {
+        getAudioLibrary()
+            .then(setAudioLibrary)
+            .catch((err) => console.error('Failed to load audio library:', err));
+    }, []);
 
     const handleFeedback = async (messageId: string, rating: 'up' | 'down') => {
         if (!userId) return;
@@ -93,9 +103,16 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
 
     // Helper to render segmented content with highlighting
     const renderContent = (msg: Message, msgIdx: number) => {
-        const sanitizedContent = msg.content.replace(/\[([^\]]+)\]\(audio:(.+?)\)/g, (match, title, filename) => {
-            // Robust encoding for Nama characters and clicks
-            const encoded = filename.split('/').map((part: string) => 
+        // --- Audio card resolution ---
+        // 1. Scan bold/code Nama phrases for a match in the audio library and inject
+        //    the `[title](audio:filename)` link syntax FirebaseAudioPlayer expects.
+        //    Re-runs every render; only actually injects once audioLibrary (component
+        //    state, loaded async on mount) has finished loading.
+        // 2. Re-encode every audio: link's filename so click symbols/diacritics survive
+        //    the markdown round-trip, whether Kora wrote the link itself or step 1 did.
+        const contentWithAudioLinks = injectAudioLinks(msg.content, audioLibrary);
+        const sanitizedContent = contentWithAudioLinks.replace(/\[([^\]]+)\]\(audio:(.+?)\)/g, (match, title, filename) => {
+            const encoded = filename.split('/').map((part: string) =>
                 encodeURIComponent(decodeURIComponent(part))
             ).join('/');
             return `[${title}](audio:${encoded})`;
@@ -402,7 +419,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder="Message Kora or hold mic to practice..."
+                            placeholder="Message Kora..."
                             className="w-full bg-transparent text-white p-4 pr-14 outline-none placeholder-gray-500 text-lg"
                             disabled={isLoading}
                         />

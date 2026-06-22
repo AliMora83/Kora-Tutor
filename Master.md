@@ -375,6 +375,31 @@ Push to `main`, confirm the Vercel deploy picks up cleanly, and verify productio
 
 ---
 
+### 2026-06-22 — Post-Feature Refactor: Audio Pipeline Cleanup (Claude / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Code-quality pass over the chat history panel and dynamic audio resolution work built across the last several sessions. Zero behavior changes — UI, copy, and rendered output are identical before/after; verified via clean `npm run build` and a runtime smoke check.
+
+#### Key Decisions
+1. **Split audio rendering into two layers.** `src/components/AudioWaveformPlayer.tsx` is now the single reusable WaveSurfer widget — props are exactly `{ url: string; label: string }` per spec, owns `WaveSurfer.create()`/`.destroy()` and the play/pause + fixed-height/clipped-card UI, nothing else. `FirebaseAudioPlayer.tsx` became a thin resolution layer: looks up a chat-message audio reference in the session-cached library, then hands `{url, label}` to `AudioWaveformPlayer`. There was exactly one WaveSurfer mount site before this split (no duplicates to consolidate) — V2's `SpeechLab/WaveVisualizer.tsx` is a deliberately different live-recording-comparison widget and was left untouched per the "don't touch V2" constraint.
+2. **`audioLibrary.ts` cache was already a true module-level singleton** (`let cachedLibrary: Promise<...> | null`, set once, reused by every caller) — confirmed, not re-initialized per component mount. Added a top-of-file JSDoc block spelling out the `{number}-{slug}-{Nama phrase}.m4a` naming convention so the parsing logic in `normalizeAudioKey` reads as "implements this documented rule," not opaque regex.
+3. **Feature-flag audit:** grepped every `FEATURE_FLAGS.*` usage across `src/` — all 6 V2 gating sites (Speech Lab in `chat/route.ts` and `ChatInterface.tsx` ×5, Progress in `progress/page.tsx` and `Sidebar.tsx`, XP in `page.tsx`) are unchanged and consistent. The audio work doesn't touch any gated surface — audio playback itself is MVP scope, not V2.
+4. **No `any` types were introduced by this sprint's work** — checked every file added/modified in this stretch (`audioLibrary.ts`, `AudioWaveformPlayer.tsx`, `FirebaseAudioPlayer.tsx`, `ChatHistoryPanel.tsx`, `page.tsx`'s additions). The `any` usages still present in `ChatInterface.tsx` (markdown component prop types, the Speech Lab `evaluation` state) all predate this work and are V2-adjacent or pre-existing project debt — left alone rather than scope-creeping into an unrelated cleanup.
+5. **No leftover debug `console.log`s found.** The `console.error` calls in `audioLibrary.ts` and `page.tsx` are intentional error-path logging (Storage list/lookup failures, Firestore write failures), consistent with the rest of the codebase's existing error-handling style — not iteration debris.
+6. **`renderContent` in `ChatInterface.tsx`** already only had two steps (inject audio links, then re-encode filenames for the markdown round-trip) — added a clearer `--- Audio card resolution ---` comment block and renamed one intermediate variable (`contentWithAudio` → `contentWithAudioLinks`) for readability; no logic changed.
+
+#### Implementation Notes
+- New file: `src/components/AudioWaveformPlayer.tsx`.
+- `FirebaseAudioPlayer.tsx` shrank from ~145 lines (own WaveSurfer instance + lookup) to ~50 (lookup + delegate).
+- `npm run build` and `npx tsc --noEmit` both clean; lint clean on every new/touched file in this pass.
+
+#### Next Step
+Ali to manually re-verify chat audio (click sounds + any other bold-phrase matches) still renders identically after this refactor, then this stretch of work (chat history panel + dynamic audio resolution + this cleanup) is ready to batch-commit.
+
+> 🔁 **Next:** Ali to confirm visually; Claude Code to batch-commit and push pending Ali's go-ahead.
+
+---
+
 ### 2026-06-21 — Sprint 1: Unblock & Ground (Claude / Anthropic)
 **Status:** `Agent Reviewed` — pending cross-check
 **Reviewed by:** Claude (Anthropic, Sonnet 4.6)
