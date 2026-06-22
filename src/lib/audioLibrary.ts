@@ -46,7 +46,13 @@ export function normalizeAudioKey(raw: string): string {
         s = slugMatch[1];
     }
 
-    s = s.replace(/║/g, '‖'); // Gemini sometimes renders Lateral as U+2551 instead of U+2016
+    // The Lateral click ("||") shows up in the wild as several different glyphs —
+    // literal ASCII "||" (the real Storage naming convention), the IPA letter ǁ
+    // (U+01C1), or the double-vertical-line look-alikes ‖ (U+2016) and ║ (U+2551)
+    // that Gemini sometimes substitutes. Collapse all of them to the literal "||"
+    // Storage files actually use, so a phrase rendered in any of these forms still
+    // matches the library key built from the real filename.
+    s = s.replace(/ǁ|‖|║/g, '||');
     return s.toLowerCase();
 }
 

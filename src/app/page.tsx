@@ -59,13 +59,16 @@ export default function HomePage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const saveMessageToFirestore = async (msg: Message, chatId: string) => {
+  const saveMessageToFirestore = async (msg: Message, chatId: string, isFirstMessage: boolean) => {
     if (!user) return;
     try {
       const chatRef = doc(db, 'users', user.uid, 'chats', chatId);
       await setDoc(chatRef, {
         messages: arrayUnion(msg),
         updatedAt: new Date(),
+        ...(isFirstMessage && msg.role === 'user'
+          ? { title: msg.content.trim().slice(0, 40) }
+          : {}),
       }, { merge: true });
     } catch (err) {
       console.error("Failed to save message:", err);
@@ -91,6 +94,7 @@ export default function HomePage() {
     // Lazily create a new chat session on first message, rather than on "New Chat" click —
     // avoids littering the history panel with empty chats nobody ever sent a message in.
     const chatId = activeChatId ?? crypto.randomUUID();
+    const isFirstMessage = !activeChatId;
     if (!activeChatId) setActiveChatId(chatId);
 
     // UI Updates
@@ -100,7 +104,7 @@ export default function HomePage() {
     setIsLoading(true);
 
     // Persist User Message
-    await saveMessageToFirestore(userMsg, chatId);
+    await saveMessageToFirestore(userMsg, chatId, isFirstMessage);
 
     // Progress Check — V2, gated
     if (FEATURE_FLAGS.XP_SYSTEM) {
@@ -123,7 +127,41 @@ export default function HomePage() {
         const botMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.content };
         setMessages(prev => [...prev, botMsg]);
         // Persist Bot Message
-        await saveMessageToFirestore(botMsg, chatId);
+        await saveMessageToFirestore(botMsg, chatId, false);
+      } else {
+        throw new Error(data.content || 'API Error');
+      }
+    } catch (error: unknown) {
+      const err = error as Error;
+      setMessages(prev => [...prev, {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `⚠️ ${err.message || "Connection Error."}`
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegenerate = async (assistantMsgIndex: number) => {
+    if (!activeChatId || isLoading) return;
+    const priorMessages = messages.slice(0, assistantMsgIndex);
+    if (priorMessages.length === 0) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: priorMessages }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const botMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.content };
+        setMessages(prev => [...prev, botMsg]);
+        await saveMessageToFirestore(botMsg, activeChatId, false);
       } else {
         throw new Error(data.content || 'API Error');
       }
@@ -199,6 +237,7 @@ export default function HomePage() {
           isLoading={isLoading}
           onNewChat={handleNewChat}
           onDeleteChat={handleDeleteChat}
+          onRegenerate={handleRegenerate}
           userId={user?.uid ?? null}
         />
       </div>

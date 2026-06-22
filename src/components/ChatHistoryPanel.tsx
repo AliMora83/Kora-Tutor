@@ -33,6 +33,11 @@ function formatDate(ts?: Timestamp): string {
     return ts.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function formatTime(ts?: Timestamp): string {
+    if (!ts) return '';
+    return ts.toDate().toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+
 export default function ChatHistoryPanel({ userId, activeChatId, onSelectChat, onDeleteActive }: ChatHistoryPanelProps) {
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -131,7 +136,7 @@ export default function ChatHistoryPanel({ userId, activeChatId, onSelectChat, o
                         {chats.map((chat) => {
                             const isActive = chat.id === activeChatId;
                             const isEditing = editingId === chat.id;
-                            const displayTitle = chat.title || `Chat — ${formatDate(chat.createdAt || chat.updatedAt)}`;
+                            const displayTitle = chat.title || `New chat · ${formatTime(chat.createdAt || chat.updatedAt)}`;
                             return (
                                 <div
                                     key={chat.id}

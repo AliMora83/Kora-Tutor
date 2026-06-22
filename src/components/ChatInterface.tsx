@@ -4,7 +4,7 @@ import AuthButton from './AuthButton';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import FirebaseAudioPlayer from './FirebaseAudioPlayer';
-import { Send, Plus, Trash2, Volume2, Square, Mic, X, Check, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Send, Plus, Trash2, RotateCcw, Mic, X, Check, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useAudioOrchestrator } from '@/hooks/useAudioOrchestrator';
 import { useAudioRecorder as useBasicAudioRecorder } from '@/hooks/useAudioRecorder';
 import SpeechLab from './SpeechLab/SpeechLab';
@@ -27,12 +27,13 @@ interface ChatInterfaceProps {
     isLoading: boolean;
     onNewChat: () => void;
     onDeleteChat: () => void;
+    onRegenerate: (assistantMsgIndex: number) => void;
     userId: string | null;
 }
 
-export function ChatInterface({ messages, input, setInput, handleSend, isLoading, onNewChat, onDeleteChat, userId }: ChatInterfaceProps) {
+export function ChatInterface({ messages, input, setInput, handleSend, isLoading, onNewChat, onDeleteChat, onRegenerate, userId }: ChatInterfaceProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { playMessage, stop, playingMessageId, activeSegmentIndex } = useAudioOrchestrator();
+    const { playingMessageId, activeSegmentIndex } = useAudioOrchestrator();
     const { isRecording: isBasicRecording, audioBlob, startRecording: startBasicRecording, stopRecording: stopBasicRecording, clearRecording } = useBasicAudioRecorder();
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [evaluation, setEvaluation] = useState<any>(null);
@@ -277,11 +278,12 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                                                 );
                                             })()}
                                             <button
-                                                onClick={() => playingMessageId === idx ? stop() : playMessage(idx, msg.content)}
-                                                title={playingMessageId === idx ? "Stop Read Aloud" : "Read Aloud"}
-                                                className="text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors p-2 rounded-full"
+                                                onClick={() => onRegenerate(idx)}
+                                                disabled={isLoading}
+                                                title="Regenerate"
+                                                className="text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors p-2 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
                                             >
-                                                {playingMessageId === idx ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                                                <RotateCcw className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </div>
