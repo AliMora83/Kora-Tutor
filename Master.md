@@ -41,7 +41,7 @@
 
 **Next Milestone:** Ship a stable MVP — single-profile sign-in, the core chat-tutor loop, and a thumbs up/down feedback control — to a small group of friends to test whether the core tutoring experience feels good and engaging.
 
-**Next Step:** Execute Sprint 5 — Community Affiliation Field
+**Next Step:** Sprint 5 complete — awaiting Ali's go-ahead to push to `main`
 
 **Blocker:** None.
 
@@ -275,6 +275,19 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 **Exit criteria:** Sidebar entries are individually identifiable at a glance, the greetings audio card plays, and the per-message toolbar offers a regenerate action instead of TTS playback.
 
+### Sprint 5 — Community Affiliation Field · Target: Jun 22, 2026
+
+**Goal:** Start learning which Khoi-San communities our users belong to, without gating anything on it or pestering anyone who's already answered.
+
+| Task | Owner | Status |
+|------|-------|--------|
+| Add `communityAffiliation` (string \| null) and `communityAffiliationSkipped` (boolean) to the `users/{uid}` doc shape | Claude Code | ✅ Done |
+| Build a one-time, optional, free-text-only modal shown after sign-in (Google or email); "Skip for now" / "Save", styled to the dark/amber theme | Claude Code | ✅ Done |
+| On Save, write a `community_affiliation_responses` record (`userId`, `affiliation`, `timestamp`, `source: "signup"`) in addition to the user doc | Claude Code | ✅ Done |
+| Update `firestore.rules`: create-only/no-read rule for `community_affiliation_responses`; confirm `communityAffiliation` is owner-only via the existing `users/{userId}` rule | Claude Code | ✅ Done |
+
+**Exit criteria:** Every signed-in user sees the prompt at most once (new or existing), no feature is gated behind answering it, and Ali can review responses via the Firebase console.
+
 ### 🏁 MVP Test-Ready Target: Jul 12, 2026
 
 ---
@@ -369,6 +382,33 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 > 🔁 **Next:** [Agent name] to cross-check and mark as `Ratified`, or Ali to approve.
 ```
+
+---
+
+### 2026-06-22 — Sprint 5: Community Affiliation Field (Claude Code / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Built the optional community affiliation prompt — new user-doc fields, a one-time post-sign-in modal, a dedicated responses collection, and the matching Firestore rule.
+
+#### Key Decisions
+1. **Provider-agnostic trigger:** the modal's show/hide check is wired into the existing `onAuthStateChanged` listener in `page.tsx`, not into `AuthButton.tsx`'s Google-specific sign-in handler. This means it fires for any auth provider (only Google sign-in is actually implemented today, despite Master.md's MVP scope listing "email or Google" — no email/password flow exists in the codebase) without needing changes if email sign-in is added later.
+2. **Dedup is field-based, not event-based:** the modal shows whenever `communityAffiliation` is falsy AND `communityAffiliationSkipped` is falsy, checked on every auth-state resolution (covers fresh sign-in and session-resume on reload alike). Once either Save or Skip writes one of those fields, the modal never shows again for that user — including users who existed before this feature shipped, since the check is purely field-presence, not a "new account" flag.
+3. **No new Firestore rule needed for `communityAffiliation` itself:** the existing `users/{userId}/{document=**}` recursive-wildcard rule already covers the `users/{userId}` document itself (Firestore recursive wildcards include the parent document), and Firestore has no field-level security — so document-level owner-only access already satisfies "communityAffiliation readable by owner only." Documented this in a `firestore.rules` comment so it doesn't look like a missed requirement on review.
+4. **New `community_affiliation_responses` rule mirrors `message_feedback`'s pattern** (`read: false`, `create` only if `userId` matches `request.auth.uid`) but is `create`-only with no `update`, since these are one-shot signup-time records, not editable like a re-rated thumbs vote.
+5. **Title generation reused the existing free-text convention** — no dropdown, single text input, "e.g. Nama, ǁKhomani, Damara..." placeholder for guidance without constraining input.
+6. **Commit split:** Sprint 4b's code (chat titles, audio fix, regenerate button) had been left uncommitted in the working tree from an earlier session — only its Master.md docs were committed. Split into two commits at Ali's direction: Sprint 4b's code committed first standalone, then Sprint 5's new code on top, keeping the one-commit-per-sprint convention intact rather than conflating two sprints' work.
+
+#### Implementation Notes
+- New: `src/components/CommunityAffiliationModal.tsx`.
+- Touched: `src/app/page.tsx` (auth listener, two new handlers, render restructured from two early returns into one fragment so the modal can overlay either the welcome screen or the chat view), `firestore.rules`.
+- Firestore rules deployed live (`firebase deploy --only firestore:rules --project nama-language`).
+- `npx tsc --noEmit`, `eslint`, and `npm run build` all clean.
+- Live browser verification (clicking through sign-in → modal → Save/Skip → reload) was not possible this session — the Chrome extension didn't connect. Flagged to Ali as a manual follow-up.
+
+#### Next Step
+Ali to manually verify the modal end-to-end (appears once, Save and Skip both dismiss and persist, no re-prompt on reload), then approve the push to `main`.
+
+> 🔁 **Next:** Ali to verify live and ratify; Claude Code to push once approved.
 
 ---
 
@@ -535,12 +575,12 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — Sprints 1–4b complete, Sprint 5 in progress
-- **Next Step:** Sprint 5 — Community Affiliation Field (Claude Code executing)
+- **Status:** Active — Sprints 1–5 complete, pending push to `main`
+- **Next Step:** Ali to ratify Sprint 5 and approve push to `main`
 - **Blocker:** None
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
-- **Progress:** 5 of 7 sprints complete (including 4b)
+- **Progress:** 6 of 7 sprints complete (including 4b)
 
 ---
 
@@ -563,6 +603,8 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 | 2026-06-22 | Chat titles show first user message, truncated | Static "Chat — date" labels were identical and useless for navigation | Ali + Claude Code |
 | 2026-06-22 | Audio waveform not rendering flagged as V2 re-recording task | Low recording volume is a content issue not a code bug; fix when re-recording audio in V2 | Ali + Claude |
 | 2026-06-22 | Speaker icon replaced with Redo/Regenerate | TTS playback is handled by the audio player; the toolbar icon is more useful as a regenerate action | Ali + Claude |
+| 2026-06-22 | Community affiliation field is fully optional, free-text only, never gates a feature, and prompts at most once per user | Wanted signal on who the community is, without adding friction or implying any feature requires answering | Ali + Claude Code |
+| 2026-06-22 | `communityAffiliation` field-level security relies on the existing `users/{userId}` document-owner rule rather than a new rule | Firestore has no field-level security rules; document-level owner gating already satisfies "owner only" for any field on that doc | Claude Code |
 
 ### Known Issues
 - React hydration mismatch warnings in current build — **Sprint 1**
