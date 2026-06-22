@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { ChatInterface, Message } from '@/components/ChatInterface';
 import ChatHistoryPanel from '@/components/ChatHistoryPanel';
+import CommunityAffiliationModal from '@/components/CommunityAffiliationModal';
 import { checkAndIncrementProgress } from '@/lib/progress';
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, setDoc, deleteDoc, arrayUnion, collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, arrayUnion, addDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from 'firebase/firestore';
 import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 interface Toast {
@@ -24,8 +25,10 @@ export default function HomePage() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [showCommunityModal, setShowCommunityModal] = useState(false);
 
-  // 1. Auth Listener — resumes the most recently active chat, if any
+  // 1. Auth Listener — resumes the most recently active chat, if any, and checks
+  // (once per sign-in) whether this user still needs the community affiliation prompt.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -43,16 +46,54 @@ export default function HomePage() {
             setActiveChatId(mostRecent.id);
           }
         }
+
+        const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+        const userData = userSnap.data();
+        setShowCommunityModal(!userData?.communityAffiliation && !userData?.communityAffiliationSkipped);
       } else {
         setMessages([]);
         setHasStarted(false);
         setActiveChatId(null);
+        setShowCommunityModal(false);
       }
       setIsAuthChecking(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const handleSaveAffiliation = async (affiliation: string) => {
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'users', user.uid), {
+        communityAffiliation: affiliation,
+        communityAffiliationSkipped: false,
+      }, { merge: true });
+      await addDoc(collection(db, 'community_affiliation_responses'), {
+        userId: user.uid,
+        affiliation,
+        timestamp: serverTimestamp(),
+        source: 'signup',
+      });
+    } catch (err) {
+      console.error('Failed to save community affiliation:', err);
+    } finally {
+      setShowCommunityModal(false);
+    }
+  };
+
+  const handleSkipAffiliation = async () => {
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'users', user.uid), {
+        communityAffiliationSkipped: true,
+      }, { merge: true });
+    } catch (err) {
+      console.error('Failed to save community affiliation skip:', err);
+    } finally {
+      setShowCommunityModal(false);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToast({ message: msg, type: 'success' });
@@ -197,65 +238,69 @@ export default function HomePage() {
     return <div className="h-screen w-full bg-[#1b1b1b]" />;
   }
 
-  // --- EMPTY STATE (Claude/Gemini Welcome) ---
-  if (!hasStarted) {
-    return (
-      <div className="flex h-screen overflow-hidden">
-        <ChatHistoryPanel
-          userId={user?.uid ?? null}
-          activeChatId={activeChatId}
-          onSelectChat={loadChat}
-          onDeleteActive={handleNewChat}
-        />
-        <div className="flex-1 min-w-0">
-          <WelcomeScreen
-            input={input}
-            setInput={setInput}
-            handleSend={handleSend}
-            isLoading={isLoading}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // --- CHAT STATE (Scrollable History) ---
   return (
-    <div className="flex h-screen overflow-hidden">
-      <ChatHistoryPanel
-        userId={user?.uid ?? null}
-        activeChatId={activeChatId}
-        onSelectChat={loadChat}
-        onDeleteActive={handleNewChat}
-      />
-      <div className="flex-1 min-w-0">
-        <ChatInterface
-          messages={messages}
-          input={input}
-          setInput={setInput}
-          handleSend={handleSend}
-          isLoading={isLoading}
-          onNewChat={handleNewChat}
-          onDeleteChat={handleDeleteChat}
-          onRegenerate={handleRegenerate}
-          userId={user?.uid ?? null}
-        />
-      </div>
-
-      {/* Success Toast */}
-      {
-        toast && (
-          <div className="fixed top-20 right-4 md:right-8 bg-[#2a2a2a] border border-green-500/30 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up z-50">
-            <div className="p-2 bg-green-500/20 rounded-full text-green-500">
-              ✨
-            </div>
-            <div>
-              <p className="font-bold text-sm">Level Up!</p>
-              <p className="text-gray-300 text-xs">{toast.message}</p>
-            </div>
+    <>
+      {!hasStarted ? (
+        // --- EMPTY STATE (Claude/Gemini Welcome) ---
+        <div className="flex h-screen overflow-hidden">
+          <ChatHistoryPanel
+            userId={user?.uid ?? null}
+            activeChatId={activeChatId}
+            onSelectChat={loadChat}
+            onDeleteActive={handleNewChat}
+          />
+          <div className="flex-1 min-w-0">
+            <WelcomeScreen
+              input={input}
+              setInput={setInput}
+              handleSend={handleSend}
+              isLoading={isLoading}
+            />
           </div>
-        )
-      }
-    </div>
+        </div>
+      ) : (
+        // --- CHAT STATE (Scrollable History) ---
+        <div className="flex h-screen overflow-hidden">
+          <ChatHistoryPanel
+            userId={user?.uid ?? null}
+            activeChatId={activeChatId}
+            onSelectChat={loadChat}
+            onDeleteActive={handleNewChat}
+          />
+          <div className="flex-1 min-w-0">
+            <ChatInterface
+              messages={messages}
+              input={input}
+              setInput={setInput}
+              handleSend={handleSend}
+              isLoading={isLoading}
+              onNewChat={handleNewChat}
+              onDeleteChat={handleDeleteChat}
+              onRegenerate={handleRegenerate}
+              userId={user?.uid ?? null}
+            />
+          </div>
+
+          {/* Success Toast */}
+          {
+            toast && (
+              <div className="fixed top-20 right-4 md:right-8 bg-[#2a2a2a] border border-green-500/30 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up z-50">
+                <div className="p-2 bg-green-500/20 rounded-full text-green-500">
+                  ✨
+                </div>
+                <div>
+                  <p className="font-bold text-sm">Level Up!</p>
+                  <p className="text-gray-300 text-xs">{toast.message}</p>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      )}
+
+      {showCommunityModal && user && (
+        <CommunityAffiliationModal onSave={handleSaveAffiliation} onSkip={handleSkipAffiliation} />
+      )}
+    </>
   );
 }

@@ -9,7 +9,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Auth-gated user data (chat history, progress)
+    // Auth-gated user data (chat history, progress, community affiliation).
+    // This recursive-wildcard rule already covers the users/{userId} document
+    // itself (where communityAffiliation/communityAffiliationSkipped live), so
+    // those fields are owner-only by inheritance — Firestore has no field-level
+    // rules, document-level owner gating is the smallest available unit.
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
@@ -27,6 +31,15 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid
         && feedbackId == request.auth.uid + '_' + request.resource.data.messageId;
       allow delete: if false;
+    }
+
+    // Community affiliation signup responses — written once on Save, never read
+    // back by clients (Ali reviews via the Firebase console / admin tooling).
+    match /community_affiliation_responses/{responseId} {
+      allow read: if false;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
     }
   }
 }
