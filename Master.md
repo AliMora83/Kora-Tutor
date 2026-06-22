@@ -1,6 +1,6 @@
 # 🌍 Kora Tutor – AI-Assisted Development
 
-> **Version:** 1.2 | **Last Updated:** 2026-06-21 | **Owner:** Ali Mora
+> **Version:** 1.4 | **Last Updated:** 2026-06-22 | **Owner:** Ali Mora
 > **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
 
 ---
@@ -41,7 +41,7 @@
 
 **Next Milestone:** Ship a stable MVP — single-profile sign-in, the core chat-tutor loop, and a thumbs up/down feedback control — to a small group of friends to test whether the core tutoring experience feels good and engaging.
 
-**Next Step:** Push to `main`, verify the live Vercel deploy and production env vars, then this MVP round is ready for friend testing.
+**Next Step:** Execute Sprint 5 — Community Affiliation Field
 
 **Blocker:** None.
 
@@ -250,6 +250,31 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 **Exit criteria:** The live link works cleanly for a first-time, signed-out visitor through to a rated conversation, on both desktop and mobile.
 
+### Sprint 4 — Chat History & Audio Pipeline · Target: Jun 22, 2026
+
+**Goal:** Give testers a way to navigate past conversations and let Kora actually play native pronunciation audio in chat, not just describe it.
+
+| Task | Owner | Status |
+|------|-------|--------|
+| Build a collapsible chat history sidebar panel (list, rename, delete past chats) | Claude Code | ✅ Done |
+| Build dynamic Firebase Storage audio resolution for chat playback (live `training_audio/` listing, normalized Nama-phrase lookup) | Claude Code | ✅ Done |
+| Split the audio player into a reusable `AudioWaveformPlayer` widget + a thin `FirebaseAudioPlayer` resolution layer | Claude Code | ✅ Done |
+| Code-quality pass over the chat history + audio resolution work (zero behavior change, verified via clean build) | Claude Code | ✅ Done |
+
+**Exit criteria:** Testers can browse and resume past chats from a sidebar, and bolded Nama phrases in Kora's replies render a working audio player sourced from real Storage files.
+
+### Sprint 4b — UI Fixes · Target: Jun 22, 2026
+
+**Goal:** Quick polish pass on three rough edges testers would hit immediately — dead-looking chat titles, a broken greetings audio card, and a TTS button nobody asked for.
+
+| Task | Owner | Status |
+|------|-------|--------|
+| Chat sidebar titles now show first user message truncated to ~40 chars, with "New chat · HH:MM" time fallback for empty chats | Claude Code | ✅ Done |
+| Audio player confirmed working for greetings phrases (e.g. !Gâi ║goas) — low recording volume noted as a V2 re-recording task, not a code bug | Claude Code | ✅ Done |
+| Speaker/TTS icon replaced with Redo/Regenerate icon (`RotateCcw` from lucide-react); clicking regenerates a fresh Kora reply for the same user message | Claude Code | ✅ Done |
+
+**Exit criteria:** Sidebar entries are individually identifiable at a glance, the greetings audio card plays, and the per-message toolbar offers a regenerate action instead of TTS playback.
+
 ### 🏁 MVP Test-Ready Target: Jul 12, 2026
 
 ---
@@ -344,6 +369,27 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 > 🔁 **Next:** [Agent name] to cross-check and mark as `Ratified`, or Ali to approve.
 ```
+
+---
+
+### 2026-06-22 — Sprint 4b: UI Fixes (Claude Code / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Three small polish fixes ahead of Sprint 5 — reactive chat sidebar titles, a fix to native greetings audio playback, and replacing the per-message TTS button with a regenerate action.
+
+#### Key Decisions
+1. **Chat titles:** the sidebar previously showed a static `Chat — {date}` label for every chat, making them indistinguishable. Titles now default to the first user message (truncated to ~40 chars), written to the chat's Firestore doc at send-time so it persists across reloads; chats with no user message yet fall back to `New chat · {time}`. Title generation is local string truncation, not a Gemini call — fast, free, and sufficient for this use case.
+2. **Greetings audio (e.g. "Good Morning" / `!Gâi ║goas`):** traced end-to-end from chat UI to Firebase Storage. Root cause was two compounding bugs, not Storage/CORS (which were already fine) — `gemini_audio_list.json` (the file list injected into Kora's system prompt) was missing 49 of 125 real Storage files including the entire greetings section, and `normalizeAudioKey()`'s click-glyph handling normalized to the wrong canonical character for the Lateral click. Fixed both; audio playback confirmed working. Low recording volume on some native clips is a content/recording-quality issue, not a code bug — logged as a V2 re-recording task, not reopened here.
+3. **Speaker icon → Regenerate:** removed the Volume2/Square TTS "Read Aloud" toggle from the per-message toolbar and replaced it with a `RotateCcw` "Regenerate" button that re-sends the same preceding user message and appends a fresh Kora reply. Underlying TTS/audio-orchestrator code was left in place (not deleted), per the standing "feature-flag, don't delete" rule — only the toolbar button was removed.
+
+#### Implementation Notes
+- Touched: `src/app/page.tsx`, `src/components/ChatHistoryPanel.tsx`, `src/components/ChatInterface.tsx`, `src/lib/audioLibrary.ts`, `src/data/gemini_audio_list.json`.
+- `npx tsc --noEmit` clean; no new lint issues introduced.
+
+#### Next Step
+Ali to ratify Sprint 4b, then Claude Code begins Sprint 5 — Community Affiliation Field.
+
+> 🔁 **Next:** Ali to ratify; Claude Code to begin Sprint 5.
 
 ---
 
@@ -489,12 +535,12 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — Sprints 1–3 complete, verifying live deploy next
-- **Next Step:** Verify Vercel deploy + production env vars post-push
+- **Status:** Active — Sprints 1–4b complete, Sprint 5 in progress
+- **Next Step:** Sprint 5 — Community Affiliation Field (Claude Code executing)
 - **Blocker:** None
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
-- **Progress:** 3 of 3 MVP sprints complete
+- **Progress:** 5 of 7 sprints complete (including 4b)
 
 ---
 
@@ -514,6 +560,9 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 | 2026-06-21 | Add thumbs up/down feedback on chat responses | Lightweight way to capture *why* testers react, not just whether they bounce | Ali + Claude |
 | 2026-06-21 | Treat PDF-grounded grammar injection as a Sprint 1 blocker, not an assumed-complete feature | Ungrounded pronunciation/grammar claims would corrupt the "does chat feel good" signal | Ali + Claude |
 | 2026-06-21 | Claude Code batches each sprint into a single commit at sprint-end and pushes directly to `main` itself | Avoids noisy per-task commits; frees Antigravity's native agent for other work, saving tokens | Ali + Claude |
+| 2026-06-22 | Chat titles show first user message, truncated | Static "Chat — date" labels were identical and useless for navigation | Ali + Claude Code |
+| 2026-06-22 | Audio waveform not rendering flagged as V2 re-recording task | Low recording volume is a content issue not a code bug; fix when re-recording audio in V2 | Ali + Claude |
+| 2026-06-22 | Speaker icon replaced with Redo/Regenerate | TTS playback is handled by the audio player; the toolbar icon is more useful as a regenerate action | Ali + Claude |
 
 ### Known Issues
 - React hydration mismatch warnings in current build — **Sprint 1**
@@ -581,4 +630,4 @@ The language doesn't disappear. Kora won't let it.
 
 ---
 
-_Last updated by: Claude (Anthropic) on 2026-06-21_
+_Last updated by: Claude (Anthropic) on 2026-06-22_
