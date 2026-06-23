@@ -16,30 +16,12 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-06-22T10:00:03Z",
+    "timestamp": "2026-06-23T10:42:00Z",
     "actor": "AliMora83",
-    "commit_message": "feat: collapsible chat history panel + dynamic audio resolution
-
-Adds a collapsible left panel listing previous chat sessions (rename,
-delete, select), backed by a real multi-session Firestore model
-(users/{uid}/chats/{chatId}) replacing the old single hardcoded
-default chat doc.
-
-Replaces the hardcoded 4-click audio map with a dynamic Storage-driven
-lookup: lists training_audio/ once per session, parses each filename's
-{number}-{slug}-{Nama phrase}.m4a convention into a phrase->URL cache,
-and auto-detects bold/code Nama phrases in chat responses to attach
-playable WaveSurfer cards — no more hallucinated-filename audio
-failures, and no longer limited to just the 4 click sounds.
-
-Includes a cleanup pass: extracted AudioWaveformPlayer as the single
-reusable WaveSurfer widget (props: url, label), audioLibrary.ts
-documented and confirmed as a true singleton cache, feature-flag
-gating audited end to end with no regressions, no stray debug logs
-or any types introduced. Logged in Master.md.
+    "commit_message": "docs: update Master.md — mark Sprint 5 complete
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>",
-    "sha": "f10846a"
+    "sha": "ab87885"
   },
-  "last_updated": "2026-06-22"
+  "last_updated": "2026-06-23"
 }
