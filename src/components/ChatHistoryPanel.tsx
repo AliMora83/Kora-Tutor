@@ -145,7 +145,15 @@ export default function ChatHistoryPanel({ userId, activeChatId, onSelectChat, o
                                             ? 'bg-secondary/15 border-secondary/30 text-secondary'
                                             : 'bg-[#1a1a1a] border-[#2a2a2a] hover:border-white/10 text-gray-300'
                                     }`}
-                                    onClick={() => !isEditing && onSelectChat(chat.id)}
+                                    onClick={() => {
+                                        if (isEditing) return;
+                                        onSelectChat(chat.id);
+                                        // Mobile: slide the panel back off-screen so the
+                                        // selected chat is immediately visible. Desktop
+                                        // (md breakpoint, matches the matchMedia check above)
+                                        // stays open.
+                                        if (window.innerWidth < 768) setIsOpen(false);
+                                    }}
                                 >
                                     {isEditing ? (
                                         <input
