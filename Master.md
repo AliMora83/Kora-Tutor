@@ -385,6 +385,30 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-06-23 — Audio Waveform Floor Fix (Claude Code / Anthropic)
+**Status:** `Agent Reviewed` — pending cross-check
+**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
+**Scope:** Revisited the "waveform renders flat" report. Verified, rather than assumed, whether the prior `Agent Reviewed` decision below ("low recording volume is a content issue not a code bug") still holds, then shipped a UI improvement on top of it.
+
+#### Key Decisions
+1. **The requested fix (`normalize: true`, `barWidth/barGap/barRadius`, amber `waveColor`/`progressColor`) was already in `AudioWaveformPlayer.tsx`, unchanged since the component's introduction.** Verified by downloading the actual flagged files (`1-The Dental/Lateral/Palatal click.m4a`) from Storage, decoding them for real (peak amplitude -19.8dB to -5.7dB — quiet but not silent), and rendering them in an isolated headless-browser reproduction of the exact component markup: the existing settings produce a correct, clearly visible normalized peak. Re-applying the same settings would have been a no-op.
+2. **Root cause of the "flat" perception:** these training clips are short, sharp clicks (~0.1–0.3s of sound inside a ~1s recording). Peak-normalizing alone still leaves a narrow spike surrounded by a long near-silent stretch — visually close enough to flat, especially at a glance or in a compressed screenshot, to read as broken even though it's rendering correctly.
+3. **Fix shipped:** replaced WaveSurfer's built-in bar options with a custom `renderFunction` (`renderBarsWithFloor` in `AudioWaveformPlayer.tsx`) that applies an 8%-of-half-height minimum floor per bar, so quiet/silent stretches show a visible baseline instead of fading to nothing. WaveSurfer's own `normalize`/`barWidth`/`barGap`/`barRadius` options are not read once `renderFunction` is set, so those literals moved into the custom renderer as constants.
+4. **This refines, not reverses, the prior decision** (`2026-06-22` entry below, and the matching Decision Log row): the root cause is still "this is what short recordings normalized look like," not a code defect — the only change here is a perceptual UI improvement on top of that correct behavior.
+5. **V2 boundary respected:** only `src/components/AudioWaveformPlayer.tsx` (MVP chat audio) was touched. `SpeechLab/WaveVisualizer.tsx` (V2, live-recording comparison) was not opened.
+
+#### Implementation Notes
+- Touched: `src/components/AudioWaveformPlayer.tsx` only.
+- Verified via an isolated headless-browser reproduction (Playwright-backed preview tool) loading the real Storage files through the real Firebase download URL — not just unit-level reasoning.
+- `npx tsc --noEmit`, `eslint`, and `npm run build` all clean.
+
+#### Next Step
+Ali to eyeball the chat audio cards live and confirm the visual improvement reads as intended.
+
+> 🔁 **Next:** Ali to verify live.
+
+---
+
 ### 2026-06-22 — Sprint 5: Community Affiliation Field (Claude Code / Anthropic)
 **Status:** `Agent Reviewed` — pending cross-check
 **Reviewed by:** Claude (Anthropic, Sonnet 4.6)
@@ -605,6 +629,7 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 | 2026-06-22 | Speaker icon replaced with Redo/Regenerate | TTS playback is handled by the audio player; the toolbar icon is more useful as a regenerate action | Ali + Claude |
 | 2026-06-22 | Community affiliation field is fully optional, free-text only, never gates a feature, and prompts at most once per user | Wanted signal on who the community is, without adding friction or implying any feature requires answering | Ali + Claude Code |
 | 2026-06-22 | `communityAffiliation` field-level security relies on the existing `users/{userId}` document-owner rule rather than a new rule | Firestore has no field-level security rules; document-level owner gating already satisfies "owner only" for any field on that doc | Claude Code |
+| 2026-06-23 | Added a minimum bar-height floor to the chat audio waveform renderer, on top of the existing (already-correct) normalize/color settings | Short click recordings stay a narrow spike even fully normalized; verified the settings weren't the bug before changing anything | Ali + Claude Code |
 
 ### Known Issues
 - React hydration mismatch warnings in current build — **Sprint 1**
