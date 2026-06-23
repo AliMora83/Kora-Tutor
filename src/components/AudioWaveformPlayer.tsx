@@ -9,6 +9,60 @@ interface AudioWaveformPlayerProps {
     label: string;
 }
 
+const BAR_WIDTH = 2;
+const BAR_GAP = 1;
+const BAR_RADIUS = 2;
+// Most training clips are short, sharp clicks (~0.1–0.3s of sound inside a ~1s
+// recording) — peak-normalizing alone still leaves the silent stretch around
+// the click looking like a flat line. This floor guarantees every bar shows a
+// visible nub (8% of half-height) even where amplitude is ~0, so the waveform
+// reads as "audio with a peak," not "broken."
+const MIN_BAR_HEIGHT_RATIO = 0.08;
+
+// WaveSurfer's built-in `normalize`/`barWidth`/`barGap`/`barRadius` options
+// only scale uniformly to the file's peak — they can't apply a per-bar floor.
+// This custom renderFunction draws the bars manually so quiet recordings still
+// look like a waveform rather than empty space. WaveSurfer calls this once per
+// color pass (waveColor, then progressColor) with `ctx.fillStyle` already set,
+// so it only needs to draw shapes, not pick colors.
+function renderBarsWithFloor(channelData: Array<Float32Array | number[]>, ctx: CanvasRenderingContext2D) {
+    const channel = channelData[0];
+    const { width, height } = ctx.canvas;
+    const step = BAR_WIDTH + BAR_GAP;
+    const numBars = Math.floor(width / step);
+    if (!channel || channel.length === 0 || numBars === 0) return;
+    const samplesPerBar = Math.max(1, Math.floor(channel.length / numBars));
+
+    let maxPeak = 0;
+    for (let i = 0; i < channel.length; i++) {
+        const abs = Math.abs(channel[i]);
+        if (abs > maxPeak) maxPeak = abs;
+    }
+    if (maxPeak === 0) maxPeak = 1;
+
+    const halfHeight = height / 2;
+
+    for (let i = 0; i < numBars; i++) {
+        const start = i * samplesPerBar;
+        const end = Math.min(start + samplesPerBar, channel.length);
+        let peak = 0;
+        for (let j = start; j < end; j++) {
+            const abs = Math.abs(channel[j]);
+            if (abs > peak) peak = abs;
+        }
+        const barHeight = Math.max(peak / maxPeak, MIN_BAR_HEIGHT_RATIO) * halfHeight;
+        const x = i * step;
+        const y = halfHeight - barHeight;
+        if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(x, y, BAR_WIDTH, barHeight * 2, BAR_RADIUS);
+            ctx.fill();
+        } else {
+            ctx.fillRect(x, y, BAR_WIDTH, barHeight * 2);
+        }
+    }
+}
+
 /**
  * The single reusable WaveSurfer playback widget for chat audio (MVP scope —
  * pronunciation playback only, not recording/scoring). Renders a fixed-size,
@@ -42,10 +96,9 @@ export default function AudioWaveformPlayer({ url, label }: AudioWaveformPlayerP
             cursorColor: 'rgba(245, 158, 11, 0.9)',
             cursorWidth: 1,
             height: 64,
-            barWidth: 2,
-            barGap: 1,
-            barRadius: 2,
-            normalize: true,
+            // renderFunction takes over all bar drawing (see renderBarsWithFloor) —
+            // barWidth/barGap/barRadius/normalize are not read once it's set.
+            renderFunction: renderBarsWithFloor,
         });
 
         wsRef.current = ws;
