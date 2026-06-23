@@ -63,6 +63,9 @@ export function WelcomeScreen({ input, setInput, handleSend, isLoading }: Welcom
                     <MoveRight size={20} />
                 </button>
             </div>
+            <p className="mt-3 text-center text-gray-600 text-xs">
+                Kora is AI and may make mistakes. Always verify Nama with a native speaker.
+            </p>
 
             {/* Quick Prompts */}
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
