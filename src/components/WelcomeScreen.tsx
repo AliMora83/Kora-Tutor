@@ -64,7 +64,7 @@ export function WelcomeScreen({ input, setInput, handleSend, isLoading }: Welcom
                 </button>
             </div>
             <p className="mt-3 text-center text-gray-600 text-xs">
-                Kora is AI and may make mistakes. Always verify Nama with a native speaker.
+                Kora is AI and may make mistakes. Please double-check important responses.
             </p>
 
             {/* Quick Prompts */}

@@ -440,7 +440,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
                     </p>
                 )}
                 <p className="text-center text-gray-600 text-xs">
-                    Kora is AI and may make mistakes. Always verify Nama with a native speaker.
+                    Kora is AI and may make mistakes. Please double-check important responses.
                 </p>
             </div>
         </div>
