@@ -16,12 +16,18 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-06-23T16:44:47Z",
+    "timestamp": "2026-06-23T20:51:39Z",
     "actor": "AliMora83",
-    "commit_message": "docs: update Master.md — audio waveform floor fix review entry
+    "commit_message": "fix: close mobile sidebar after selecting a chat
+
+Tapping a chat item in the slide-out sidebar on mobile now closes the
+panel immediately so the selected chat is visible right away. Uses the
+existing 768px breakpoint (window.innerWidth < 768, matching the
+matchMedia check already used for the initial open/closed default).
+Desktop behavior is unchanged — the panel stays open.
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>",
-    "sha": "4159668"
+    "sha": "c9b929f"
   },
   "last_updated": "2026-06-23"
 }
