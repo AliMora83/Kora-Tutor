@@ -16,13 +16,14 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-06-25T07:46:42Z",
+    "timestamp": "2026-06-25T07:55:21Z",
     "actor": "AliMora83",
-    "commit_message": "Personalize welcome greeting with signed-in user's name
+    "commit_message": "Fall back to email prefix for name/initials when no Google displayName
 
-Use displayName (Google) or email prefix as fallback; show name-less
-greeting when signed out instead of a hardcoded Ali.",
-    "sha": "58ddec4"
+AuthButton's sidebar chip already used user.displayName/photoURL
+dynamically for Google sign-in, but had no fallback for email-only
+sign-in (showed blank name and a hardcoded U initial).",
+    "sha": "2f95d31"
   },
   "last_updated": "2026-06-25"
 }
