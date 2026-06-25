@@ -45,24 +45,27 @@ export default function AuthButton() {
         );
     }
 
+    const name = user.displayName || user.email?.split("@")[0] || "User";
+    const firstName = name.split(" ")[0];
+
     return (
         <div className="flex items-center gap-3 bg-[#2a2a2a] pl-2 pr-4 py-1.5 rounded-full border border-white/5 shadow-sm">
             {user.photoURL ? (
                 <Image
                     src={user.photoURL}
-                    alt={user.displayName || "User"}
+                    alt={name}
                     width={28}
                     height={28}
                     className="rounded-full"
                 />
             ) : (
                 <div className="w-7 h-7 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold">
-                    {user.displayName?.[0] || "U"}
+                    {name[0].toUpperCase()}
                 </div>
             )}
 
             <span className="text-sm truncate max-w-[80px] hidden md:block text-gray-300">
-                {user.displayName?.split(" ")[0]}
+                {firstName}
             </span>
 
             <button
