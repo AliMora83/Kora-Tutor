@@ -23,6 +23,7 @@ export default function AuthButton() {
     const handleGoogleLogin = async () => {
         try {
             const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: "select_account" });
             await signInWithPopup(auth, provider);
         } catch (error) {
             console.error("Login Failed:", error);
