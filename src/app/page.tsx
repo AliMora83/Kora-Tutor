@@ -255,6 +255,7 @@ export default function HomePage() {
               setInput={setInput}
               handleSend={handleSend}
               isLoading={isLoading}
+              user={user}
             />
           </div>
         </div>

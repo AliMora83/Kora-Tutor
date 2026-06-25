@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { MoveRight } from 'lucide-react';
+import { User } from 'firebase/auth';
 import AuthButton from './AuthButton';
 
 interface WelcomeScreenProps {
@@ -8,9 +9,13 @@ interface WelcomeScreenProps {
     setInput: (value: string) => void;
     handleSend: () => void;
     isLoading: boolean;
+    user: User | null;
 }
 
-export function WelcomeScreen({ input, setInput, handleSend, isLoading }: WelcomeScreenProps) {
+export function WelcomeScreen({ input, setInput, handleSend, isLoading, user }: WelcomeScreenProps) {
+    const displayName = user?.displayName || user?.email?.split('@')[0];
+    const greeting = displayName ? `!Gâi tsēs, ${displayName}` : '!Gâi tsēs';
+
     return (
         <div className="h-[calc(100dvh-4rem)] md:h-screen flex flex-col items-center justify-center p-4 max-w-3xl mx-auto relative">
             <div className="absolute top-4 right-4">
@@ -33,7 +38,7 @@ export function WelcomeScreen({ input, setInput, handleSend, isLoading }: Welcom
                     </div>
                 </div>
                 <h1 className="text-5xl md:text-6xl font-serif text-white mb-4 tracking-tight">
-                    !Gâi tsēs, Ali
+                    {greeting}
                 </h1>
                 <p className="text-gray-400 text-lg md:text-xl font-light">
                     How can I help you learn Nama today?
