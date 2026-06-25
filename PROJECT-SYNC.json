@@ -16,14 +16,14 @@
   "agents": ["Claude", "Comet"],
   "version": "0.0.0",
   "last_push": {
-    "timestamp": "2026-06-25T07:55:21Z",
+    "timestamp": "2026-06-25T08:17:45Z",
     "actor": "AliMora83",
-    "commit_message": "Fall back to email prefix for name/initials when no Google displayName
+    "commit_message": "Force Google account picker on sign-in
 
-AuthButton's sidebar chip already used user.displayName/photoURL
-dynamically for Google sign-in, but had no fallback for email-only
-sign-in (showed blank name and a hardcoded U initial).",
-    "sha": "2f95d31"
+Without prompt=select_account, signInWithPopup silently reused the
+browser's existing Google session instead of letting the user switch
+accounts, making the sidebar chip appear stuck on one account.",
+    "sha": "fc7fbd4"
   },
   "last_updated": "2026-06-25"
 }
