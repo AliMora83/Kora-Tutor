@@ -1,6 +1,6 @@
 # 🌍 Kora Tutor – AI-Assisted Development
 
-> **Version:** 1.7 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
+> **Version:** 1.8 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
 > **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
 
 ---
@@ -21,11 +21,11 @@
 
 **Description:** Kora is a culturally immersive language-learning platform for Khoekhoē children (ages 5–14), teaching Khoekhoegowab (Nama) through AI-powered speech coaching, animated phonetic illustrations, and a structured curriculum sourced from Pedro Dausab's *Leer jouself Nama*.
 
-**Status:** MVP built (Sprints 1–5) — new Gemini key set in Vercel 2026-11-16; live chat reply not yet re-verified. No external users yet
+**Status:** MVP built (Sprints 1–5) — Gemini key rotated and working; model updated to 3.8 Flash 2026-11-16, awaiting a live reply to confirm. No external users yet
 
 **Priority:** Priority 2 – Active Development
 
-**Stack:** TypeScript / Next.js 14+ / Firebase / Google Gemini 2.5 Flash (`@google/genai`) / WaveSurfer.js / Framer Motion / GSAP
+**Stack:** TypeScript / Next.js 14+ / Firebase / Google Gemini 3.8 Flash (`@google/genai`) / WaveSurfer.js / Framer Motion / GSAP
 
 **Repo:** [https://github.com/AliMora83/Kora-Tutor](https://github.com/AliMora83/Kora-Tutor)
 
@@ -41,9 +41,9 @@
 
 **Next Milestone:** Get the first real users. The MVP is built but as of 2026-11-15 nobody other than Ali has signed in, so there is no engagement or thumbs data yet. Sprint 6 removes what stands between a visitor and a first good answer.
 
-**Next Step:** Confirm the chat replies on kora.namka.cloud (redeploy first if the key was added without one), then start Sprint 6 — see Delivery Schedule.
+**Next Step:** Confirm the chat replies on kora.namka.cloud, then start Sprint 6 — see Delivery Schedule.
 
-**Blocker:** 🟡 Clearing. The 403 `PERMISSION_DENIED` ("API key was reported as leaked", observed 2026-11-15) should be resolved — a new key was set in Vercel on 2026-11-16. Not yet confirmed by a live reply: a Vercel env-var change only takes effect after a redeploy. See Known Issues.
+**Blocker:** 🟡 Clearing. The leaked-key 403 is resolved — the rotated key authenticates. It exposed a second fault behind it: `gemini-2.5-flash` is retired for new users and returned `404 NOT_FOUND`. The model ID moved to `gemini-3.8-flash` on 2026-11-16; awaiting a live reply to confirm.
 
 **Effort Estimate:** M (re-scoped down from L after MVP cut)
 
@@ -80,7 +80,7 @@
 - **Backend:** Firebase Firestore, Firebase Cloud Storage
 - **Database:** Firebase Firestore (user profiles, progress, XP, lesson state, audio tags, message feedback)
 - **Auth:** Firebase Authentication — single-profile per user for MVP; family accounts (parent + child) deferred to V2
-- **AI / LLM:** Google Gemini 2.5 Flash via the `@google/genai` SDK (migrated from 1.5 Flash / `@google/generative-ai` in Sprint 1). Grounding is the Markdown guide in Firestore (`resources/nama_language_guide`), not PDFs
+- **AI / LLM:** Google Gemini 3.8 Flash via the `@google/genai` SDK. The model ID lives in one place, `src/lib/model.ts` — import `GEMINI_MODEL`, never hardcode it. Gemini 3.x rejects `temperature`, `topP`, `topK` and `candidateCount`, so keep them out of the request config. (History: 1.5 Flash on the legacy SDK → 2.5 Flash in Sprint 1 → 3.8 Flash on 2026-11-16, after Google retired 2.5 for new users.) Grounding is the Markdown guide in Firestore (`resources/nama_language_guide`), not PDFs
 - **Voice:** Native recordings only. TTS was dropped — the toolbar TTS button became Regenerate in Sprint 4b; `api/tts` code is retained but unused. Kora never synthesises Nama pronunciation
 - **Audio Viz:** WaveSurfer.js — used in MVP chat for native-clip playback (Sprint 4); the Speech Lab comparison view stays V2
 - **SVG Animations:** GSAP / CSS keyframes (mouth/tongue articulation) — V2
@@ -304,6 +304,7 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 | # | Task | Owner | Status |
 |---|------|-------|--------|
+| -1 | **Model ID retired.** `gemini-2.5-flash` returns `404 NOT_FOUND` for new users; moved to `gemini-3.8-flash` via the new `src/lib/model.ts` constant | Claude | ✅ Done 2026-11-16 — awaiting live confirmation |
 | 0 | **Rotate the Gemini API key.** New key from Google AI Studio on project `nama-language`; set `GEMINI_API_KEY` in Vercel → Settings → Environment Variables (Production), redeploy, delete the old key | Ali (manual) | 🟡 Key set 2026-11-16 — outstanding: redeploy if not already done, confirm a live chat reply, delete the old key |
 | 1 | Replace the raw API error JSON in the chat bubble with a friendly message; log the detail server-side only | Claude Code | ⚪ Planned |
 | 2 | **Golden-set eval.** 40–50 question/expected-answer pairs drawn from `nama_language_guide.md` (all three starter-prompt types, plus out-of-source questions that must be refused). Script in `src/scripts/`, run before every prompt or model change | Claude Code | ⚪ Planned |
@@ -430,6 +431,30 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-11-16 — Model Moved to Gemini 3.8 Flash (Claude / Anthropic)
+**Status:** `Agent Reviewed`
+**Reviewed by:** Claude (Anthropic)
+**Scope:** Fixed the live chat after the key rotation surfaced a second fault. First code change in this run of work.
+
+#### Key Decisions
+1. **The key rotation worked.** With a valid key the 403 disappeared and revealed what sat behind it: `404 NOT_FOUND — "models/gemini-2.5-flash is no longer available to new users"`. Two separate faults, found one at a time. The project's own Google account is "new" to that model, so the retirement applies.
+2. **Moved to `gemini-3.8-flash`**, the successor Google's error names. Confirmed against Google's docs: it is GA, and the `ai.models.generateContent({ model, config, contents })` shape this codebase already uses is exactly what the 3.8 docs show, so it is a drop-in string change.
+3. **The model ID now lives in `src/lib/model.ts`** as `GEMINI_MODEL`. It had been hardcoded at six sites; one stale copy is enough to take the chat down again. The file also carries the Gemini 3.x warning about sampling parameters.
+4. **Updated:** `chat/route.ts` (both call sites and the log line), `generate-script/route.ts` (the `/generators/*` pages), and the "Kora 2.5 Flash" label in `ChatInterface.tsx`.
+5. **Not updated, deliberately:** `evaluate-speech/route.ts` is Speech Lab, which `CLAUDE.md` puts off-limits during MVP work — it needs the same one-line change and Ali's go-ahead. `smart_audio_ingestion.ts` is a standalone script already broken on the removed legacy SDK. Both are in Known Issues.
+
+#### Implementation Notes
+- Checked for `temperature`, `topP`, `topK` and `candidateCount` before switching, since Gemini 3.x rejects them: none present.
+- `npx tsc --noEmit` passes. `npm run build` could not complete in the sandbox — `next/font` cannot reach Google Fonts through the proxy, which is a network restriction here, not a fault in this change. Vercel's builders can reach it.
+- `@google/genai` left at `^2.9.0`. If 3.8 needs a newer SDK, the error will say so; bumping it blind risks a build break for no observed reason.
+
+#### Next Step
+Ali confirms a reply on the live site, then deletes the old key.
+
+> 🔁 **Next:** Ali to verify live; then Sprint 6.
+
+---
+
 ### 2026-11-16 — Duplicate Master Files Removed (Claude / Anthropic)
 **Status:** `Agent Reviewed`
 **Reviewed by:** Claude (Anthropic)
@@ -532,9 +557,9 @@ The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — MVP built (Sprints 1–5); new Gemini key set, awaiting live verification
+- **Status:** Active — MVP built (Sprints 1–5); key rotated and model moved to Gemini 3.8 Flash, awaiting live verification
 - **Next Step:** Confirm a live chat reply, then Sprint 6 (Unblock & Open), then Sprint 7 (VPS migration)
-- **Blocker:** None confirmed — key rotation pending live verification
+- **Blocker:** None confirmed — key and model fixes pending live verification
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
 - **Progress:** Sprints 1–5 complete (including 4b); Sprints 6–7 planned
@@ -567,6 +592,7 @@ The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2
 | 2026-11-15 | Click naming follows the source book: ǃ = palatal, ǂ = alveolar, written with real click letters | Consistency with *Leer jouself Nama*, the grounding source | Ali |
 | 2026-11-16 | Hosting confirmed as Vercel today; kora.namka.cloud is the public URL | Cloudflare DNS shows `kora` as a CNAME to `vercel-dns-017.com` | Ali + Claude |
 | 2026-11-16 | Move Kora off Vercel onto the Hostinger VPS (Docker behind nginx) — Sprint 7, after the chat is unblocked | Ali self-hosts his other apps there and wants Kora with them | Ali |
+| 2026-11-16 | Move to `gemini-3.8-flash` and keep the model ID in one constant (`src/lib/model.ts`) | Google retired `gemini-2.5-flash` for new users, 404ing the live chat; it had been hardcoded at six sites, any one of which could break it again | Ali + Claude |
 | 2026-11-16 | Delete `Kora-Master.md` and `Template-Master.md` after carrying four unique V2 feature details into Master.md; delete the 2026-03-29 Comet review entry | Two stale master files invited agents to act on April's plan; the Comet entry only described restructuring the file that is now gone | Ali |
 | 2026-11-16 | Move AI Review entries older than 2026-11-15 into `docs/AI-REVIEWS-ARCHIVE.md`; keep the three most recent in Master.md | Master.md had grown too large for tooling to read or rewrite in one pass, blocking syncs; the history is still worth keeping | Ali + Claude |
 | 2026-11-16 | New Gemini key issued from AI Studio on `nama-language` and set in Vercel; old key to be deleted once a live reply is confirmed | The old key was revoked by Google as leaked, taking the chat down | Ali |
@@ -576,7 +602,9 @@ The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2
 
 ### Known Issues
 - 🟠 **`/api/chat`, `/api/evaluate-speech` and `/api/generate-script` accept unauthenticated POSTs** — no middleware, no token check, no rate limit; the sign-in wall is UI-only and never protected the key. Fix: Sprint 6 task 6
-- 🟡 **Gemini key rotation not yet verified end-to-end** — new key set in Vercel 2026-11-16; still to do: redeploy (if not already triggered), confirm a live reply, delete the old key. Fix: Sprint 6 task 0
+- 🟡 **Gemini key rotation not yet verified end-to-end** — the rotated key authenticates (the leaked-key 403 is gone); still to do: confirm a live reply on the 3.8 model, then delete the old key. Fix: Sprint 6 task 0
+- 🟠 **Two files still name the retired `gemini-2.5-flash`** and will 404 when next run: `src/app/api/evaluate-speech/route.ts` (Speech Lab, V2-flagged — left alone under the no-touch-V2 rule, needs Ali's go-ahead for a one-line change) and `src/scripts/smart_audio_ingestion.ts` (also still on the removed `@google/generative-ai` SDK). Both should import `GEMINI_MODEL` from `src/lib/model.ts`
+- **A model-not-found 404 is misdiagnosed as expired audio** — the `catch` in `src/app/api/chat/route.ts` treats any 404 as stale Gemini File API URIs and silently retries text-only, so a bad model ID costs two failed calls and a misleading log line. Narrow that check to the file-URI case
 - **Kora's system prompt uses ASCII click stand-ins** (`!`, `|`, `||`, with only `ǂ` as a real letter) in `src/app/api/chat/route.ts`, so Kora teaches them to learners — contradicts the real-click-letter decision (ǀ ǁ ǂ ǃ). Naming itself is correct per the book
 - **Raw API error JSON is shown to the user** in the chat bubble — Sprint 6 task 1
 - **A Google API key is in public git history** (`src/lib/firebase.ts`, commits `62e792a` / `3c4089d`). Restrict or rotate it in Google Cloud Console; rewriting history does not un-leak it

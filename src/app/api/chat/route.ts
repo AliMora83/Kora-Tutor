@@ -4,6 +4,7 @@ import { getNamaKnowledge } from "@/lib/knowledge";
 import * as fs from 'fs';
 import * as path from 'path';
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
+import { GEMINI_MODEL } from "@/lib/model";
 
 export async function POST(req: Request) {
     try {
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
             console.log(`🎙️  Injected ${fileParts.length} audio files into Kora's brain.`);
         }
 
-        console.log(`📤 Sending prompt to Gemini (Model: gemini-2.5-flash) with Knowledge Injection...`);
+        console.log(`📤 Sending prompt to Gemini (Model: ${GEMINI_MODEL}) with Knowledge Injection...`);
 
         // Try with audio files injected; fall back to text-only if URIs have expired
         let responseText: string;
@@ -99,7 +100,7 @@ export async function POST(req: Request) {
                 { text: prompt }
             ];
             const result = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
+                model: GEMINI_MODEL,
                 config: { systemInstruction },
                 contents: [{ role: "user", parts: contentParts }],
             });
@@ -110,7 +111,7 @@ export async function POST(req: Request) {
             if (fileParts.length > 0 && (msg.includes('400') || msg.includes('404') || msg.includes('not found') || msg.includes('File'))) {
                 console.warn('⚠️  Gemini audio URIs appear expired. Falling back to text-only. Re-run `npx tsx src/scripts/sync_audio.ts` to refresh.');
                 const fallback = await ai.models.generateContent({
-                    model: "gemini-2.5-flash",
+                    model: GEMINI_MODEL,
                     config: { systemInstruction },
                     contents: [{ role: "user", parts: [{ text: prompt }] }],
                 });

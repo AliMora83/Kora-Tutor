@@ -220,7 +220,7 @@ export function ChatInterface({ messages, input, setInput, handleSend, isLoading
             {/* Header - Minimal */}
             <header className="p-4 flex gap-4 justify-between items-center text-gray-500 text-sm border-b border-white/5">
                 <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">Kora 2.5 Flash</span>
+                    <span className="font-semibold text-white">Kora 3.8 Flash</span>
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse my-auto"></span>
                 </div>
                 <div className="flex items-center gap-3">
