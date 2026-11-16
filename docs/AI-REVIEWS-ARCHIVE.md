@@ -3,6 +3,7 @@
 > Historical **AI Reviews & Artifacts** entries, moved out of `Master.md` on 2026-11-16 to keep that file readable and small enough to sync.
 > Nothing here was edited — entries are verbatim, newest first. The three most recent entries stay in [`Master.md`](../Master.md#-ai-reviews--artifacts).
 > Decisions recorded here still stand: read this before re-architecting anything they cover.
+> The 2026-03-29 Comet review was removed on 2026-11-16 — it described restructuring `Kora-Master.md`, a superseded file that no longer exists.
 
 ---
 
@@ -195,22 +196,4 @@ Ali to proceed with targeted minor updates and review.
 
 ---
 
-### 2026-03-29 — Project Architecture Review (Comet / Perplexity)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Comet (Perplexity)
-**Scope:** Full review of Kora-Master.md — restructured to align with MACP template standards
-
-#### Key Decisions
-1. **Kora-Master.md** converted from pure product vision doc → MACP-compliant master file with Status, Current Goal, MACP protocol, and AI Reviews section
-2. **README.md** replaced default Next.js boilerplate with a proper project-specific README referencing Kora-Master.md and Mission Control
-3. Existing product vision, sprint schedule, curriculum map, and tech stack preserved in full — no architectural decisions altered
-4. Document now readable by Mission Control dashboard (Status, Next Step, Blocker, AI Model, Effort, Progress fields present)
-
-#### Next Step
-Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydration fix + Firestore audio schema.
-
-> 🔁 **Next:** Claude or Ali to cross-check and mark as `Ratified`.
-
----
-
-_Archived from `Master.md` v1.6 on 2026-11-16._
+_Archived from `Master.md` v1.6 on 2026-11-16. Eight entries._

@@ -1,6 +1,6 @@
 # 🌍 Kora Tutor – AI-Assisted Development
 
-> **Version:** 1.6 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
+> **Version:** 1.7 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
 > **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
 
 ---
@@ -191,6 +191,14 @@ Kora exists so that Khoekhoē children grow up knowing their language — not as
 Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 **Audio Pipeline:** 104+ `.m4a` files in Firebase `training_audio/`; 3 voices planned (adult male/Ali, adult female Khoekhoē speaker, child 6–10); Firestore tag schema: `file`, `concept`, `lesson`, `speaker`, `gender`, `age_group`, `verified`.
+
+**Speech Wave Visualizer:** WaveSurfer.js renders the native speaker's waveform (amber/gold) and the learner's recording (blue/white) side by side, with a click-spike callout marking where the transient should appear.
+
+**Learner Memory & Weak-Spot Tracking:** per learner — click accuracy history, vocabulary recall rate, streaks. Adaptive drills target the weak click types.
+
+**Rewards & Engagement:** XP, daily streaks, cultural badges (e.g. *"Master of the ǃ click"*), unlockable Kora outfits, family leaderboard.
+
+**Offline Mode (PWA):** a service worker caches Levels 1–2. Progress syncs to Firestore on reconnect, and the Speech Lab falls back to waveform-only comparison while offline.
 
 ---
 
@@ -422,6 +430,27 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
+### 2026-11-16 — Duplicate Master Files Removed (Claude / Anthropic)
+**Status:** `Agent Reviewed`
+**Reviewed by:** Claude (Anthropic)
+**Scope:** Consolidated and deleted the two leftover master files, and dropped one obsolete review entry. Documentation only — no app code changed.
+
+#### Key Decisions
+1. **`Kora-Master.md` deleted** (last touched 2026-04-20) and **`Template-Master.md` deleted** (2026-03-28). Both predate this file and were a standing trap: an agent told to "read Master.md" could open the wrong one and act on April's plan.
+2. **Four details carried across from `Kora-Master.md` into V2 Feature Detail** before deleting it — the only content it held that this file lacked: the Speech Wave Visualizer's colour scheme and click-spike callout, vocabulary recall rate in weak-spot tracking, cultural badges and unlockable Kora outfits, and the offline scope (Levels 1–2 cached, Speech Lab degrades to waveform-only).
+3. **Deliberately not carried across:** its click table used the pre-ratification naming (ǂ alveolar swapped with ǃ palatal) and ASCII stand-ins; its "PDF Knowledge Injection" section describes a grounding method replaced by Markdown-in-Firestore; its sprint schedule, metadata, Known Issues and Quick Links were all superseded. Everything else in it already appears here.
+4. **The 2026-03-29 Comet review entry deleted from the archive** — its whole subject was restructuring `Kora-Master.md`, which no longer exists. The archive now holds eight entries.
+
+#### Implementation Notes
+- Checked before deleting: nothing outside the deleted files and that Comet entry referenced either filename, so no dangling links remain.
+
+#### Next Step
+None — this closes the docs cleanup. Sprint 6 is next.
+
+> 🔁 **Next:** Claude Code to start Sprint 6 once the live chat reply is confirmed.
+
+---
+
 ### 2026-11-16 — Gemini Key Rotated; API Routes Found Unauthenticated (Claude / Anthropic)
 **Status:** `Agent Reviewed`
 **Reviewed by:** Claude (Anthropic)
@@ -492,7 +521,7 @@ Ali rotates the key and confirms a live chat reply. Then Claude Code runs Sprint
 
 ### 📚 Older entries
 
-The nine entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2026-03/04 reviews) live in [`docs/AI-REVIEWS-ARCHIVE.md`](docs/AI-REVIEWS-ARCHIVE.md), moved there on 2026-11-16 to keep this file readable. Their decisions still stand — read the archive before re-architecting anything they cover.
+The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2026-04-20 Antigravity review) live in [`docs/AI-REVIEWS-ARCHIVE.md`](docs/AI-REVIEWS-ARCHIVE.md), moved there on 2026-11-16 to keep this file readable. Their decisions still stand — read the archive before re-architecting anything they cover.
 
 ---
 
@@ -538,6 +567,7 @@ The nine entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and 
 | 2026-11-15 | Click naming follows the source book: ǃ = palatal, ǂ = alveolar, written with real click letters | Consistency with *Leer jouself Nama*, the grounding source | Ali |
 | 2026-11-16 | Hosting confirmed as Vercel today; kora.namka.cloud is the public URL | Cloudflare DNS shows `kora` as a CNAME to `vercel-dns-017.com` | Ali + Claude |
 | 2026-11-16 | Move Kora off Vercel onto the Hostinger VPS (Docker behind nginx) — Sprint 7, after the chat is unblocked | Ali self-hosts his other apps there and wants Kora with them | Ali |
+| 2026-11-16 | Delete `Kora-Master.md` and `Template-Master.md` after carrying four unique V2 feature details into Master.md; delete the 2026-03-29 Comet review entry | Two stale master files invited agents to act on April's plan; the Comet entry only described restructuring the file that is now gone | Ali |
 | 2026-11-16 | Move AI Review entries older than 2026-11-15 into `docs/AI-REVIEWS-ARCHIVE.md`; keep the three most recent in Master.md | Master.md had grown too large for tooling to read or rewrite in one pass, blocking syncs; the history is still worth keeping | Ali + Claude |
 | 2026-11-16 | New Gemini key issued from AI Studio on `nama-language` and set in Vercel; old key to be deleted once a live reply is confirmed | The old key was revoked by Google as leaked, taking the chat down | Ali |
 | 2026-11-16 | Rate-limit and origin-check the API routes before opening guest chat (Sprint 6 task 6, ahead of task 4) | The routes are already unauthenticated, so the new key's quota is spendable by anyone who finds the URL | Ali + Claude |
