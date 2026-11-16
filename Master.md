@@ -1,6 +1,6 @@
 # 🌍 Kora Tutor – AI-Assisted Development
 
-> **Version:** 1.8 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
+> **Version:** 1.9 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
 > **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
 
 ---
@@ -441,7 +441,9 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 2. **Moved to `gemini-3.8-flash`**, the successor Google's error names. Confirmed against Google's docs: it is GA, and the `ai.models.generateContent({ model, config, contents })` shape this codebase already uses is exactly what the 3.8 docs show, so it is a drop-in string change.
 3. **The model ID now lives in `src/lib/model.ts`** as `GEMINI_MODEL`. It had been hardcoded at six sites; one stale copy is enough to take the chat down again. The file also carries the Gemini 3.x warning about sampling parameters.
 4. **Updated:** `chat/route.ts` (both call sites and the log line), `generate-script/route.ts` (the `/generators/*` pages), and the "Kora 2.5 Flash" label in `ChatInterface.tsx`.
-5. **Not updated, deliberately:** `evaluate-speech/route.ts` is Speech Lab, which `CLAUDE.md` puts off-limits during MVP work — it needs the same one-line change and Ali's go-ahead. `smart_audio_ingestion.ts` is a standalone script already broken on the removed legacy SDK. Both are in Known Issues.
+5. **`evaluate-speech/route.ts` (Speech Lab, V2-flagged) updated on Ali's explicit go-ahead**, as the one exception to the no-touch-V2 rule: leaving a dead model ID in flagged-off code just books a failure for whoever resumes V2. Behaviour is unchanged while the flag is off.
+6. **`smart_audio_ingestion.ts` left alone** — it is a standalone script still on the removed `@google/generative-ai` SDK, so it needs a migration rather than a rename. Logged in Known Issues.
+7. **The `package-lock.json` churn from this session's `npm install` was reverted** — only `"peer": true` metadata, no version changes, and not a deliberate part of this work.
 
 #### Implementation Notes
 - Checked for `temperature`, `topP`, `topK` and `candidateCount` before switching, since Gemini 3.x rejects them: none present.
@@ -593,6 +595,7 @@ The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2
 | 2026-11-16 | Hosting confirmed as Vercel today; kora.namka.cloud is the public URL | Cloudflare DNS shows `kora` as a CNAME to `vercel-dns-017.com` | Ali + Claude |
 | 2026-11-16 | Move Kora off Vercel onto the Hostinger VPS (Docker behind nginx) — Sprint 7, after the chat is unblocked | Ali self-hosts his other apps there and wants Kora with them | Ali |
 | 2026-11-16 | Move to `gemini-3.8-flash` and keep the model ID in one constant (`src/lib/model.ts`) | Google retired `gemini-2.5-flash` for new users, 404ing the live chat; it had been hardcoded at six sites, any one of which could break it again | Ali + Claude |
+| 2026-11-16 | Update the V2-flagged `evaluate-speech/route.ts` to the new model despite the no-touch-V2 rule | A dead model ID in flagged-off code is a failure booked for whoever resumes V2; the change is inert while the flag is off | Ali |
 | 2026-11-16 | Delete `Kora-Master.md` and `Template-Master.md` after carrying four unique V2 feature details into Master.md; delete the 2026-03-29 Comet review entry | Two stale master files invited agents to act on April's plan; the Comet entry only described restructuring the file that is now gone | Ali |
 | 2026-11-16 | Move AI Review entries older than 2026-11-15 into `docs/AI-REVIEWS-ARCHIVE.md`; keep the three most recent in Master.md | Master.md had grown too large for tooling to read or rewrite in one pass, blocking syncs; the history is still worth keeping | Ali + Claude |
 | 2026-11-16 | New Gemini key issued from AI Studio on `nama-language` and set in Vercel; old key to be deleted once a live reply is confirmed | The old key was revoked by Google as leaked, taking the chat down | Ali |
@@ -603,7 +606,7 @@ The entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2
 ### Known Issues
 - 🟠 **`/api/chat`, `/api/evaluate-speech` and `/api/generate-script` accept unauthenticated POSTs** — no middleware, no token check, no rate limit; the sign-in wall is UI-only and never protected the key. Fix: Sprint 6 task 6
 - 🟡 **Gemini key rotation not yet verified end-to-end** — the rotated key authenticates (the leaked-key 403 is gone); still to do: confirm a live reply on the 3.8 model, then delete the old key. Fix: Sprint 6 task 0
-- 🟠 **Two files still name the retired `gemini-2.5-flash`** and will 404 when next run: `src/app/api/evaluate-speech/route.ts` (Speech Lab, V2-flagged — left alone under the no-touch-V2 rule, needs Ali's go-ahead for a one-line change) and `src/scripts/smart_audio_ingestion.ts` (also still on the removed `@google/generative-ai` SDK). Both should import `GEMINI_MODEL` from `src/lib/model.ts`
+- 🟠 **`src/scripts/smart_audio_ingestion.ts` still names the retired `gemini-2.5-flash`** and is also still on the removed `@google/generative-ai` SDK, so it needs an SDK migration, not just the `GEMINI_MODEL` import. (`evaluate-speech/route.ts` was updated on 2026-11-16 with Ali's go-ahead, despite being V2-flagged.)
 - **A model-not-found 404 is misdiagnosed as expired audio** — the `catch` in `src/app/api/chat/route.ts` treats any 404 as stale Gemini File API URIs and silently retries text-only, so a bad model ID costs two failed calls and a misleading log line. Narrow that check to the file-URI case
 - **Kora's system prompt uses ASCII click stand-ins** (`!`, `|`, `||`, with only `ǂ` as a real letter) in `src/app/api/chat/route.ts`, so Kora teaches them to learners — contradicts the real-click-letter decision (ǀ ǁ ǂ ǃ). Naming itself is correct per the book
 - **Raw API error JSON is shown to the user** in the chat bubble — Sprint 6 task 1
