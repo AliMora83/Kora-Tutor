@@ -7,7 +7,7 @@
 
 1. Read `Master.md` in full. It is the single source of truth for current sprint status, MVP vs. V2 feature scope, and the Multi-Agent Context Protocol (MACP) used to log decisions.
 2. Read `AGENT-ONBOARDING.md` for repo-specific conventions, agent roles, and raw-URL references (including the Mission Control `Master.md`).
-3. Check the **AI Reviews & Artifacts** section of `Master.md` for decisions other agents (or past sessions) have already made — don't re-decide something already settled there.
+3. Check the **AI Reviews & Artifacts** section of `Master.md` for decisions other agents (or past sessions) have already made — don't re-decide something already settled there. Entries before 2026-11-15 live in `docs/AI-REVIEWS-ARCHIVE.md`; read that too before re-architecting anything they cover.
 
 ## Standing rules for this repo
 
@@ -19,5 +19,5 @@
 
 ## Stack quick reference
 
-Next.js 14+ (App Router) · TypeScript · Firebase (Auth, Firestore, Storage) · Google Gemini 1.5 Flash · Google Cloud TTS · WaveSurfer.js (V2) · GSAP / Framer Motion.
+Next.js 14+ (App Router) · TypeScript · Firebase (Auth, Firestore, Storage) · Google Gemini 2.5 Flash (`@google/genai`) · native audio only, no TTS · WaveSurfer.js · GSAP / Framer Motion.
 Full detail lives in `Master.md` → Tech Stack & Dependencies.

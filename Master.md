@@ -1,6 +1,6 @@
 # 🌍 Kora Tutor – AI-Assisted Development
 
-> **Version:** 1.4 | **Last Updated:** 2026-06-22 | **Owner:** Ali Mora
+> **Version:** 1.6 | **Last Updated:** 2026-11-16 | **Owner:** Ali Mora
 > **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
 
 ---
@@ -11,7 +11,7 @@
 
 **For AI Agents:** Before starting work on this project:
 1. Read this `Master.md` file first
-2. Check the **AI Reviews & Artifacts** section for existing architectural decisions
+2. Check the **AI Reviews & Artifacts** section for existing architectural decisions — and `docs/AI-REVIEWS-ARCHIVE.md` for anything before 2026-11-15
 3. Follow the **Multi-Agent Context Protocol (MACP)** below
 4. Commit your review to this file when done
 
@@ -21,15 +21,15 @@
 
 **Description:** Kora is a culturally immersive language-learning platform for Khoekhoē children (ages 5–14), teaching Khoekhoegowab (Nama) through AI-powered speech coaching, animated phonetic illustrations, and a structured curriculum sourced from Pedro Dausab's *Leer jouself Nama*.
 
-**Status:** In Progress — scoped down to MVP for first round of friend testing
+**Status:** MVP built (Sprints 1–5) — new Gemini key set in Vercel 2026-11-16; live chat reply not yet re-verified. No external users yet
 
 **Priority:** Priority 2 – Active Development
 
-**Stack:** TypeScript / Next.js 14+ / Firebase / Google Gemini 1.5 Flash / Google Cloud TTS / WaveSurfer.js / Framer Motion / GSAP
+**Stack:** TypeScript / Next.js 14+ / Firebase / Google Gemini 2.5 Flash (`@google/genai`) / WaveSurfer.js / Framer Motion / GSAP
 
 **Repo:** [https://github.com/AliMora83/Kora-Tutor](https://github.com/AliMora83/Kora-Tutor)
 
-**Live URL:** [https://kora-tutor.vercel.app/](https://kora-tutor.vercel.app/) — currently deployed, being hardened for friend testing
+**Live URL:** [https://kora.namka.cloud/](https://kora.namka.cloud/) — served by Vercel (DNS: `kora` CNAME → `vercel-dns-017.com`)
 
 **AI Model Assigned:** Claude Code (build/execution) / Claude, Comet (Perplexity) (review)
 
@@ -39,15 +39,15 @@
 
 ## 🎯 Current Goal
 
-**Next Milestone:** Ship a stable MVP — single-profile sign-in, the core chat-tutor loop, and a thumbs up/down feedback control — to a small group of friends to test whether the core tutoring experience feels good and engaging.
+**Next Milestone:** Get the first real users. The MVP is built but as of 2026-11-15 nobody other than Ali has signed in, so there is no engagement or thumbs data yet. Sprint 6 removes what stands between a visitor and a first good answer.
 
-**Next Step:** Sprint 5 complete — awaiting Ali's go-ahead to push to `main`
+**Next Step:** Confirm the chat replies on kora.namka.cloud (redeploy first if the key was added without one), then start Sprint 6 — see Delivery Schedule.
 
-**Blocker:** None.
+**Blocker:** 🟡 Clearing. The 403 `PERMISSION_DENIED` ("API key was reported as leaked", observed 2026-11-15) should be resolved — a new key was set in Vercel on 2026-11-16. Not yet confirmed by a live reply: a Vercel env-var change only takes effect after a redeploy. See Known Issues.
 
 **Effort Estimate:** M (re-scoped down from L after MVP cut)
 
-**Progress:** 20% of full vision; MVP scope itself starting fresh at Sprint 1 of 3
+**Progress:** 20% of full vision; MVP Sprints 1–5 complete, Sprint 6 planned
 
 ---
 
@@ -80,11 +80,11 @@
 - **Backend:** Firebase Firestore, Firebase Cloud Storage
 - **Database:** Firebase Firestore (user profiles, progress, XP, lesson state, audio tags, message feedback)
 - **Auth:** Firebase Authentication — single-profile per user for MVP; family accounts (parent + child) deferred to V2
-- **AI / LLM:** Google Gemini 1.5 Flash (multimodal: text, audio, PDF knowledge injection)
-- **Voice (TTS):** Google Cloud TTS (en-AU-Neural2)
-- **Audio Viz:** WaveSurfer.js (waveform rendering) — V2, gated behind Speech Lab flag
+- **AI / LLM:** Google Gemini 2.5 Flash via the `@google/genai` SDK (migrated from 1.5 Flash / `@google/generative-ai` in Sprint 1). Grounding is the Markdown guide in Firestore (`resources/nama_language_guide`), not PDFs
+- **Voice:** Native recordings only. TTS was dropped — the toolbar TTS button became Regenerate in Sprint 4b; `api/tts` code is retained but unused. Kora never synthesises Nama pronunciation
+- **Audio Viz:** WaveSurfer.js — used in MVP chat for native-clip playback (Sprint 4); the Speech Lab comparison view stays V2
 - **SVG Animations:** GSAP / CSS keyframes (mouth/tongue articulation) — V2
-- **Deployment:** Vercel + Firebase
+- **Deployment:** **Today:** Vercel (Next.js app and `/api/*` routes, auto-deploy on push to `main`) + Firebase (Auth, Firestore, Storage). kora.namka.cloud is a Cloudflare DNS-only CNAME to Vercel (`vercel-dns-017.com`), confirmed 2026-11-16; production env vars live in the Vercel project settings. **Target:** self-hosted on the Hostinger VPS (Docker behind the existing nginx front door) — Sprint 7
 
 ---
 
@@ -100,7 +100,7 @@ Kora exists so that Khoekhoē children grow up knowing their language — not as
 
 ## 👥 Primary Users & Personas
 
-### 1. 🧪 Friend Tester — *Current MVP User*
+### 1. 🧪 First Visitor — *Current MVP User*
 - General adult user, not necessarily Khoekhoē heritage or a parent
 - Engages directly with the chat tutor, no curriculum structure yet
 - Goal of this round: does the conversation feel engaging and trustworthy
@@ -166,10 +166,12 @@ Kora exists so that Khoekhoē children grow up knowing their language — not as
 
 | Click | Symbol | Articulation |
 |-------|--------|--------------|
-| Dental | \| | Tongue tip behind upper teeth |
-| Lateral | \|\| | Side of tongue against molars |
-| Alveolar | ! | Tongue tip to alveolar ridge |
-| Palatal | ǂ | Tongue body to hard palate |
+| Dental | ǀ | Tongue tip behind upper teeth |
+| Lateral | ǁ | Side of tongue against molars |
+| Alveolar | ǂ | Tongue tip to alveolar ridge |
+| Palatal | ǃ | Tongue body to hard palate |
+
+*Naming follows the source book (*Leer jouself Nama*): ǃ = palatal, ǂ = alveolar. Always use the real click letters ǀ ǁ ǂ ǃ, never ASCII stand-ins.*
 
 **Speech Lab:** Record → Gemini evaluates → accuracy score (1–100) with per-click breakdown, phonetic highlighting, minimum 3 attempts before passing.
 
@@ -288,7 +290,42 @@ Level 1 is the mandatory gateway; 80% required to unlock each next lesson.
 
 **Exit criteria:** Every signed-in user sees the prompt at most once (new or existing), no feature is gated behind answering it, and Ali can review responses via the Firebase console.
 
-### 🏁 MVP Test-Ready Target: Jul 12, 2026
+### Sprint 6 — Unblock & Open · Target: TBC (starts once the key is rotated)
+
+**Goal:** Restore the chat, then make Kora worth visiting without an account. Agreed in the 2026-11-15 product review.
+
+| # | Task | Owner | Status |
+|---|------|-------|--------|
+| 0 | **Rotate the Gemini API key.** New key from Google AI Studio on project `nama-language`; set `GEMINI_API_KEY` in Vercel → Settings → Environment Variables (Production), redeploy, delete the old key | Ali (manual) | 🟡 Key set 2026-11-16 — outstanding: redeploy if not already done, confirm a live chat reply, delete the old key |
+| 1 | Replace the raw API error JSON in the chat bubble with a friendly message; log the detail server-side only | Claude Code | ⚪ Planned |
+| 2 | **Golden-set eval.** 40–50 question/expected-answer pairs drawn from `nama_language_guide.md` (all three starter-prompt types, plus out-of-source questions that must be refused). Script in `src/scripts/`, run before every prompt or model change | Claude Code | ⚪ Planned |
+| 3 | **"Hear the four clicks" public page.** No sign-in, no LLM: the four clicks plus ~20 words with native audio. Server-rendered so it is shareable and indexable | Claude Code | ⚪ Planned — gated on the listening check below |
+| 4 | **Guest chat.** ~5 messages before the sign-in prompt, on top of the limiter from task 6 | Claude Code | ⚪ Planned — blocked on task 6 |
+| 5 | **Refusal log.** When Kora declines a question as outside the source, write the question to a `knowledge_gaps` collection (create-only, no client read). The list drives what content to source next | Claude Code | ⚪ Planned |
+| 6 | **Protect the API routes — raised in priority 2026-11-16.** `/api/chat`, `/api/evaluate-speech` and `/api/generate-script` have no auth check, no middleware and no rate limit today, so anyone who finds them can spend the new key's quota. Add a per-IP/per-session limit and an origin check before task 4 opens guest chat; task 4 then rides on the same limiter | Claude Code | 🟠 Do before task 4 |
+
+**Gate for task 3:** clips are confirmed by ear before they are published. The existing `training_audio/1-The … click.m4a` file names predate the book-naming decision (ǃ = palatal, ǂ = alveolar), so each file must be checked against the label it is shown with.
+
+**Exit criteria:** A signed-out visitor can hear the four clicks and send a first chat message without an account; the eval passes on the deployed model; refused questions are being logged.
+
+### Sprint 7 — Move Hosting to the Hostinger VPS · Target: TBC (after Sprint 6)
+
+**Goal:** Kora runs on Ali's own VPS alongside his other dockerized apps, not on Vercel. Decided 2026-11-16.
+
+| # | Task | Owner | Status |
+|---|------|-------|--------|
+| 1 | Add `output: 'standalone'` to `next.config.ts` and a multi-stage `Dockerfile`. **The seven `NEXT_PUBLIC_FIREBASE_*` values are inlined at build time, so they must be Docker build args, not only runtime env** — a container built without them ships a broken Firebase config | Claude Code | ⚪ Planned |
+| 2 | Add Kora to the VPS `docker-compose.yml`; `GEMINI_API_KEY` goes in that stack's `.env` (runtime, server-side only) | Ali | ⚪ Planned |
+| 3 | nginx front-door server block for kora.namka.cloud → the container; TLS via certbot (Cloudflare is DNS-only, so the cert is issued on the VPS) | Ali | ⚪ Planned |
+| 4 | Cut over DNS: replace the `kora` CNAME with an A record to the VPS IP. Keep the Vercel deploy live until the VPS serves a working chat | Ali | ⚪ Planned |
+| 5 | Decide the deploy trigger — a push to `main` will no longer deploy anything by itself. Either a manual `git pull && docker compose up -d --build` or a webhook/CI step | Ali + Claude | ⚪ Planned |
+| 6 | Confirm kora.namka.cloud is still in Firebase Auth's authorised domains (the domain does not change, so it should be), then delete the Vercel project and its stored env vars | Ali | ⚪ Planned |
+
+**Watch for:** the COOP header in `next.config.ts` (`same-origin-allow-popups`) is what makes Google sign-in work — if nginx or the container drops it, sign-in breaks with console errors. Verify it on the live response after cutover.
+
+**Exit criteria:** kora.namka.cloud is served by the VPS over HTTPS, sign-in and chat both work, and Vercel is gone.
+
+### 🏁 MVP Test-Ready Target: Jul 12, 2026 *(build met; no external users as of 2026-11-15)*
 
 ---
 
@@ -345,7 +382,7 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 > **Critical:** All agents must follow this protocol to prevent hallucinations and ensure coordination.
 
 ### Workflow for AI Agents
-1. **Read Master.md first** — Check the **AI Reviews & Artifacts** section for existing decisions.
+1. **Read Master.md first** — Check the **AI Reviews & Artifacts** section for existing decisions, and `docs/AI-REVIEWS-ARCHIVE.md` for entries before 2026-11-15.
 2. **Review consensus states:**
    - `Unreviewed` → No agent has reviewed this yet
    - `Agent Reviewed` → One agent reviewed (needs cross-check)
@@ -385,210 +422,77 @@ Lessons 6–8, badges, family leaderboard, PWA, mobile optimisation, full regres
 
 ---
 
-### 2026-06-23 — Audio Waveform Floor Fix (Claude Code / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Revisited the "waveform renders flat" report. Verified, rather than assumed, whether the prior `Agent Reviewed` decision below ("low recording volume is a content issue not a code bug") still holds, then shipped a UI improvement on top of it.
-
-#### Key Decisions
-1. **The requested fix (`normalize: true`, `barWidth/barGap/barRadius`, amber `waveColor`/`progressColor`) was already in `AudioWaveformPlayer.tsx`, unchanged since the component's introduction.** Verified by downloading the actual flagged files (`1-The Dental/Lateral/Palatal click.m4a`) from Storage, decoding them for real (peak amplitude -19.8dB to -5.7dB — quiet but not silent), and rendering them in an isolated headless-browser reproduction of the exact component markup: the existing settings produce a correct, clearly visible normalized peak. Re-applying the same settings would have been a no-op.
-2. **Root cause of the "flat" perception:** these training clips are short, sharp clicks (~0.1–0.3s of sound inside a ~1s recording). Peak-normalizing alone still leaves a narrow spike surrounded by a long near-silent stretch — visually close enough to flat, especially at a glance or in a compressed screenshot, to read as broken even though it's rendering correctly.
-3. **Fix shipped:** replaced WaveSurfer's built-in bar options with a custom `renderFunction` (`renderBarsWithFloor` in `AudioWaveformPlayer.tsx`) that applies an 8%-of-half-height minimum floor per bar, so quiet/silent stretches show a visible baseline instead of fading to nothing. WaveSurfer's own `normalize`/`barWidth`/`barGap`/`barRadius` options are not read once `renderFunction` is set, so those literals moved into the custom renderer as constants.
-4. **This refines, not reverses, the prior decision** (`2026-06-22` entry below, and the matching Decision Log row): the root cause is still "this is what short recordings normalized look like," not a code defect — the only change here is a perceptual UI improvement on top of that correct behavior.
-5. **V2 boundary respected:** only `src/components/AudioWaveformPlayer.tsx` (MVP chat audio) was touched. `SpeechLab/WaveVisualizer.tsx` (V2, live-recording comparison) was not opened.
-
-#### Implementation Notes
-- Touched: `src/components/AudioWaveformPlayer.tsx` only.
-- Verified via an isolated headless-browser reproduction (Playwright-backed preview tool) loading the real Storage files through the real Firebase download URL — not just unit-level reasoning.
-- `npx tsc --noEmit`, `eslint`, and `npm run build` all clean.
-
-#### Next Step
-Ali to eyeball the chat audio cards live and confirm the visual improvement reads as intended.
-
-> 🔁 **Next:** Ali to verify live.
-
----
-
-### 2026-06-22 — Sprint 5: Community Affiliation Field (Claude Code / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Built the optional community affiliation prompt — new user-doc fields, a one-time post-sign-in modal, a dedicated responses collection, and the matching Firestore rule.
-
-#### Key Decisions
-1. **Provider-agnostic trigger:** the modal's show/hide check is wired into the existing `onAuthStateChanged` listener in `page.tsx`, not into `AuthButton.tsx`'s Google-specific sign-in handler. This means it fires for any auth provider (only Google sign-in is actually implemented today, despite Master.md's MVP scope listing "email or Google" — no email/password flow exists in the codebase) without needing changes if email sign-in is added later.
-2. **Dedup is field-based, not event-based:** the modal shows whenever `communityAffiliation` is falsy AND `communityAffiliationSkipped` is falsy, checked on every auth-state resolution (covers fresh sign-in and session-resume on reload alike). Once either Save or Skip writes one of those fields, the modal never shows again for that user — including users who existed before this feature shipped, since the check is purely field-presence, not a "new account" flag.
-3. **No new Firestore rule needed for `communityAffiliation` itself:** the existing `users/{userId}/{document=**}` recursive-wildcard rule already covers the `users/{userId}` document itself (Firestore recursive wildcards include the parent document), and Firestore has no field-level security — so document-level owner-only access already satisfies "communityAffiliation readable by owner only." Documented this in a `firestore.rules` comment so it doesn't look like a missed requirement on review.
-4. **New `community_affiliation_responses` rule mirrors `message_feedback`'s pattern** (`read: false`, `create` only if `userId` matches `request.auth.uid`) but is `create`-only with no `update`, since these are one-shot signup-time records, not editable like a re-rated thumbs vote.
-5. **Title generation reused the existing free-text convention** — no dropdown, single text input, "e.g. Nama, ǁKhomani, Damara..." placeholder for guidance without constraining input.
-6. **Commit split:** Sprint 4b's code (chat titles, audio fix, regenerate button) had been left uncommitted in the working tree from an earlier session — only its Master.md docs were committed. Split into two commits at Ali's direction: Sprint 4b's code committed first standalone, then Sprint 5's new code on top, keeping the one-commit-per-sprint convention intact rather than conflating two sprints' work.
-
-#### Implementation Notes
-- New: `src/components/CommunityAffiliationModal.tsx`.
-- Touched: `src/app/page.tsx` (auth listener, two new handlers, render restructured from two early returns into one fragment so the modal can overlay either the welcome screen or the chat view), `firestore.rules`.
-- Firestore rules deployed live (`firebase deploy --only firestore:rules --project nama-language`).
-- `npx tsc --noEmit`, `eslint`, and `npm run build` all clean.
-- Live browser verification (clicking through sign-in → modal → Save/Skip → reload) was not possible this session — the Chrome extension didn't connect. Flagged to Ali as a manual follow-up.
-
-#### Next Step
-Ali to manually verify the modal end-to-end (appears once, Save and Skip both dismiss and persist, no re-prompt on reload), then approve the push to `main`.
-
-> 🔁 **Next:** Ali to verify live and ratify; Claude Code to push once approved.
-
----
-
-### 2026-06-22 — Sprint 4b: UI Fixes (Claude Code / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Three small polish fixes ahead of Sprint 5 — reactive chat sidebar titles, a fix to native greetings audio playback, and replacing the per-message TTS button with a regenerate action.
-
-#### Key Decisions
-1. **Chat titles:** the sidebar previously showed a static `Chat — {date}` label for every chat, making them indistinguishable. Titles now default to the first user message (truncated to ~40 chars), written to the chat's Firestore doc at send-time so it persists across reloads; chats with no user message yet fall back to `New chat · {time}`. Title generation is local string truncation, not a Gemini call — fast, free, and sufficient for this use case.
-2. **Greetings audio (e.g. "Good Morning" / `!Gâi ║goas`):** traced end-to-end from chat UI to Firebase Storage. Root cause was two compounding bugs, not Storage/CORS (which were already fine) — `gemini_audio_list.json` (the file list injected into Kora's system prompt) was missing 49 of 125 real Storage files including the entire greetings section, and `normalizeAudioKey()`'s click-glyph handling normalized to the wrong canonical character for the Lateral click. Fixed both; audio playback confirmed working. Low recording volume on some native clips is a content/recording-quality issue, not a code bug — logged as a V2 re-recording task, not reopened here.
-3. **Speaker icon → Regenerate:** removed the Volume2/Square TTS "Read Aloud" toggle from the per-message toolbar and replaced it with a `RotateCcw` "Regenerate" button that re-sends the same preceding user message and appends a fresh Kora reply. Underlying TTS/audio-orchestrator code was left in place (not deleted), per the standing "feature-flag, don't delete" rule — only the toolbar button was removed.
-
-#### Implementation Notes
-- Touched: `src/app/page.tsx`, `src/components/ChatHistoryPanel.tsx`, `src/components/ChatInterface.tsx`, `src/lib/audioLibrary.ts`, `src/data/gemini_audio_list.json`.
-- `npx tsc --noEmit` clean; no new lint issues introduced.
-
-#### Next Step
-Ali to ratify Sprint 4b, then Claude Code begins Sprint 5 — Community Affiliation Field.
-
-> 🔁 **Next:** Ali to ratify; Claude Code to begin Sprint 5.
-
----
-
-### 2026-06-21 — Sprint 2 & 3: Identity, Feedback, Polish (Claude / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Completed Sprint 2 (sign-in, feedback, feature flags, progress page) and Sprint 3 (regression pass, feedback review tooling, console/mobile sweep). Deploy-to-Vercel verification deferred to immediately after this push.
-
-#### Key Decisions
-1. **Sign-in was already built** — Google sign-in via `signInWithPopup` was fully functional going into Sprint 2 (`AuthButton.tsx`); no family/parent-child model existed, so MVP single-profile scope was already satisfied. No code changes needed there.
-2. **Feedback control:** added thumbs up/down buttons to each Kora response in `ChatInterface.tsx`, writing to `message_feedback/{userId}_{messageId}` (deterministic ID so re-rating overwrites rather than duplicating). Added a matching Firestore rule (`create`/`update` only if `request.auth.uid` matches `userId` and the doc ID matches the expected composite key; `read`/`delete` denied to all clients) and deployed it live.
-3. **Feature flags introduced from scratch** — `src/lib/featureFlags.ts`, three flags (`SPEECH_LAB`, `PROGRESS_DASHBOARD`, `XP_SYSTEM`), all default off via env vars. Gated: Speech Lab UI + mic recorder + the system-prompt section that told Kora to promote the mic (chat/route.ts), the Progress sidebar link, and the XP toast/increment logic. None of the underlying code was deleted, per standing rule.
-4. **`/progress` route is still directly reachable by URL** even with the nav link hidden, so the page itself now checks the flag and shows a short "still being built" placeholder instead of mock curriculum/XP data when off — avoids a tester finding half-built lesson cards by typing the URL.
-5. **Feedback review tooling:** built `src/scripts/review_feedback.ts` using the operator's own `gcloud auth print-access-token` (not a service-account key) against the Firestore REST API — avoids introducing a new admin-only web route/auth surface for a one-person, one-sprint need. Verified end-to-end by seeding and then deleting a synthetic test record.
-6. **Regression pass:** all 3 starter prompts (Translate Phrase, Explain Grammar, Practice Script) tested live and grounded correctly; `npm run build` (production build, same as Vercel will run) succeeds cleanly; all routes return 200.
-7. **Found and fixed a real console error during the sweep, not just warnings:** Firebase Auth's `signInWithPopup` calls `window.closed` on the popup, which Next.js's default same-origin COOP header blocks — this was throwing 4 red `Cross-Origin-Opener-Policy` errors on every sign-in. Fixed via `headers()` in `next.config.ts` setting `Cross-Origin-Opener-Policy: same-origin-allow-popups` globally. Verified fixed live (confirmed by Ali after server restart). Also cleaned up two `next/image` warnings (missing `sizes` prop) on the logo across `Sidebar.tsx` and `ChatInterface.tsx`.
-8. **Completed the SDK migration started in Sprint 1** — `src/scripts/sync_audio.ts` was still on the deprecated `@google/generative-ai` SDK (missed in the original 3-route migration since it's a standalone script, not an API route). Migrated to `@google/genai` and switched from a `service-account.json` file to Application Default Credentials, matching `seed_knowledge.ts`'s pattern.
-9. **Vercel deploy is automatic** — no `vercel.json` or linked CLI project found; the live URL deploys via Vercel's GitHub integration on push to `main`. "Deploy to Vercel" is therefore not a separate manual step — it happens as a side effect of this sprint's push, and production env vars will be verified against the live URL immediately after.
-
-#### Implementation Notes
-- New: `src/lib/featureFlags.ts`, `src/scripts/review_feedback.ts`.
-- Firestore rules redeployed live (`firebase deploy --only firestore:rules --project nama-language`) — note the active `firebase use` project alias was stale (pointed at an unrelated project, `openclaw-mission-control-d1fa8`); always pass `--project nama-language` explicitly rather than relying on `firebase use` in this environment.
-- `Message` type gained an optional `id` field (`crypto.randomUUID()` generated at send-time in `page.tsx`) so feedback can reference a stable message ID; legacy messages without an ID fall back to `idx-{index}` in the UI.
-
-#### Next Step
-Push to `main`, confirm the Vercel deploy picks up cleanly, and verify production env vars (`GEMINI_API_KEY`, Firebase config) match what's expected on the live URL. Then this MVP test-ready milestone is complete pending Ali's go-ahead to share the link with friends.
-
-> 🔁 **Next:** Claude Code to verify the live Vercel deploy post-push; Ali to ratify Sprints 2 & 3 or flag anything from manual testing.
-
----
-
-### 2026-06-22 — Post-Feature Refactor: Audio Pipeline Cleanup (Claude / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Code-quality pass over the chat history panel and dynamic audio resolution work built across the last several sessions. Zero behavior changes — UI, copy, and rendered output are identical before/after; verified via clean `npm run build` and a runtime smoke check.
-
-#### Key Decisions
-1. **Split audio rendering into two layers.** `src/components/AudioWaveformPlayer.tsx` is now the single reusable WaveSurfer widget — props are exactly `{ url: string; label: string }` per spec, owns `WaveSurfer.create()`/`.destroy()` and the play/pause + fixed-height/clipped-card UI, nothing else. `FirebaseAudioPlayer.tsx` became a thin resolution layer: looks up a chat-message audio reference in the session-cached library, then hands `{url, label}` to `AudioWaveformPlayer`. There was exactly one WaveSurfer mount site before this split (no duplicates to consolidate) — V2's `SpeechLab/WaveVisualizer.tsx` is a deliberately different live-recording-comparison widget and was left untouched per the "don't touch V2" constraint.
-2. **`audioLibrary.ts` cache was already a true module-level singleton** (`let cachedLibrary: Promise<...> | null`, set once, reused by every caller) — confirmed, not re-initialized per component mount. Added a top-of-file JSDoc block spelling out the `{number}-{slug}-{Nama phrase}.m4a` naming convention so the parsing logic in `normalizeAudioKey` reads as "implements this documented rule," not opaque regex.
-3. **Feature-flag audit:** grepped every `FEATURE_FLAGS.*` usage across `src/` — all 6 V2 gating sites (Speech Lab in `chat/route.ts` and `ChatInterface.tsx` ×5, Progress in `progress/page.tsx` and `Sidebar.tsx`, XP in `page.tsx`) are unchanged and consistent. The audio work doesn't touch any gated surface — audio playback itself is MVP scope, not V2.
-4. **No `any` types were introduced by this sprint's work** — checked every file added/modified in this stretch (`audioLibrary.ts`, `AudioWaveformPlayer.tsx`, `FirebaseAudioPlayer.tsx`, `ChatHistoryPanel.tsx`, `page.tsx`'s additions). The `any` usages still present in `ChatInterface.tsx` (markdown component prop types, the Speech Lab `evaluation` state) all predate this work and are V2-adjacent or pre-existing project debt — left alone rather than scope-creeping into an unrelated cleanup.
-5. **No leftover debug `console.log`s found.** The `console.error` calls in `audioLibrary.ts` and `page.tsx` are intentional error-path logging (Storage list/lookup failures, Firestore write failures), consistent with the rest of the codebase's existing error-handling style — not iteration debris.
-6. **`renderContent` in `ChatInterface.tsx`** already only had two steps (inject audio links, then re-encode filenames for the markdown round-trip) — added a clearer `--- Audio card resolution ---` comment block and renamed one intermediate variable (`contentWithAudio` → `contentWithAudioLinks`) for readability; no logic changed.
-
-#### Implementation Notes
-- New file: `src/components/AudioWaveformPlayer.tsx`.
-- `FirebaseAudioPlayer.tsx` shrank from ~145 lines (own WaveSurfer instance + lookup) to ~50 (lookup + delegate).
-- `npm run build` and `npx tsc --noEmit` both clean; lint clean on every new/touched file in this pass.
-
-#### Next Step
-Ali to manually re-verify chat audio (click sounds + any other bold-phrase matches) still renders identically after this refactor, then this stretch of work (chat history panel + dynamic audio resolution + this cleanup) is ready to batch-commit.
-
-> 🔁 **Next:** Ali to confirm visually; Claude Code to batch-commit and push pending Ali's go-ahead.
-
----
-
-### 2026-06-21 — Sprint 1: Unblock & Ground (Claude / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Executed Sprint 1 — fixed Gemini 400 errors, reviewed and cleaned up hydration handling, verified PDF/grammar knowledge grounding is live in production chat calls.
-
-#### Key Decisions
-1. **Root cause of Gemini 400 errors:** the codebase was on `@google/generative-ai@0.24.1`, Google's frozen legacy SDK (last published a year prior, no longer updated), which is incompatible with `gemini-2.5-flash` on the current live API. Migrated `chat/route.ts`, `evaluate-speech/route.ts`, and `generate-script/route.ts` to the actively maintained `@google/genai` SDK (`ai.models.generateContent({ model, config: { systemInstruction }, contents })`). Live-tested after migration — 200 OK, Kora responding correctly.
-2. **Hydration mismatch review:** audited all client components (`AuthButton`, `Sidebar`, `ChatInterface`, `page.tsx`, `FirebaseAudioPlayer`, `progress/page.tsx`) for the usual mismatch sources (`Date.now()`, `Math.random()`, unguarded `window`/`localStorage` access, conditional SSR-vs-client render). All existing `mounted`-flag and `typeof window` guards were already correct. Removed one dead, unused `mounted` state in `ChatInterface.tsx` (no functional mismatch, just clutter). No live console verification was possible this session (Chrome extension didn't respond) — flagged below as a follow-up.
-3. **PDF-grounded knowledge injection — confirmed live, but found and fixed a real blocker first:** the Firestore database query initially returned `NOT_FOUND` on `(default)`. Root cause turned out to be that the project uses a **named** Firestore database (`nama-language`), not the default one — `src/lib/firebase.ts` already correctly points `getFirestore(app, "nama-language")`, and the `resources/nama_language_guide` document was already seeded there (full Nama language guide content, last updated 2026-02-06). Verified end-to-end with a live chat call: Kora correctly refused to answer a question outside the source material ("water") rather than hallucinating — confirms strict source-adherence is working as designed.
-4. **Knowledge source is Markdown-in-Firestore, not the PDFs named in Master.md's Firebase Storage Structure section** (`nama-grammar-guide.pdf`, `click-phonology-reference.pdf`). Those PDF filenames don't exist in the repo or Storage; the actual grounding source is `resources/nama_language_guide` (Markdown) read via `src/lib/knowledge.ts`. This works correctly for MVP purposes but the PDF filenames in this doc's Firebase Storage Structure section are aspirational/inaccurate and should be corrected in a future pass.
-5. **Smoke test partially complete:** a full 20-turn smoke test was not run this session. A single live end-to-end call confirmed grounding and zero errors, but the full multi-turn pass (translate/grammar/audio prompts, console monitoring) is deferred — see Next Step.
-
-#### Implementation Notes
-- New file: `src/scripts/seed_knowledge.ts` — re-seeds `resources/nama_language_guide` into the `nama-language` Firestore database via firebase-admin; keep this for future re-seeding if content changes.
-- `package.json`: `@google/generative-ai` removed in favor of `@google/genai@^2.9.0`.
-- `.env.local` created locally (not committed) with `GEMINI_API_KEY` and Firebase web config — required for any future local dev/testing session.
-
-#### Next Step
-Run the full 20-turn smoke test (translate phrase / explain grammar / practice script prompts) with browser console monitoring once Chrome tooling is available, to formally close out Sprint 1's last exit-criterion. Then begin Sprint 2: single-profile sign-in, thumbs up/down feedback, and feature-flagging all V2 surfaces.
-
-> 🔁 **Next:** Claude Code to begin Sprint 2; full smoke-test pass can run in parallel or as a quick follow-up.
-
----
-
-### 2026-06-21 — MVP Scoping for Friend Testing Round 1 (Claude / Anthropic)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Claude (Anthropic, Sonnet 4.6)
-**Scope:** Defined MVP scope for the first round of friend testing, ahead of any further build work, and re-sequenced the delivery schedule into 3 MVP sprints for Claude Code execution.
-
-#### Key Decisions
-1. **Test goal locked:** this round validates whether the core chat-tutor experience feels good and engaging — not pronunciation accuracy, not curriculum depth, not gamification.
-2. **Family/parent-child account model deferred to V2 in full.** MVP uses simple single-profile sign-in (email/Google); family accounts are a real long-term requirement but add auth surface area the current testers (friends, not parents) don't need.
-3. **MVP feature set:** chat + 3 starter prompts, PDF-grounded Kora responses, single-profile sign-in, thumbs up/down feedback on responses.
-4. **V2 features hidden via feature flags, not deleted:** Speech Lab, curriculum map, XP/streaks/badges, Kid/Parent mode, offline/PWA, progress dashboard. Flagging preserves the work already done while keeping the MVP surface clean.
-5. **PDF-grounded grammar injection flagged as a hidden blocker, not a nice-to-have** — if Kora gives ungrounded pronunciation/grammar answers during testing, that's a credibility failure, not a missing feature. Verifying this is live is now Sprint 1 work, not assumed-done.
-6. **New schedule:** original 6-sprint full-vision plan preserved under "V2 Roadmap (Reference)"; replaced at the top with 3 MVP-focused sprints (Unblock & Ground → Identity & Signal → Polish & Ship-Ready), targeted for Jun 22 – Jul 12, 2026.
-
-#### Implementation Notes
-See **MVP Definition — Testing Round 1** and **Delivery Schedule — MVP Sprints** sections above for full detail. `message_feedback` is a new Firestore collection introduced in Sprint 2 (not previously documented) — shape: `{ userId, messageId, rating, timestamp }`.
-
-#### Next Step
-Begin Sprint 1: fix Gemini 400 errors, clear hydration warnings, confirm PDF grounding is actually wired into live chat calls (currently unverified — could be a silent gap).
-
-> 🔁 **Next:** Claude Code to execute Sprint 1, then report back here before starting Sprint 2.
-
----
-
-### 2026-04-20 — UI & Functionality Review (Antigravity / Gemini)
+### 2026-11-16 — Gemini Key Rotated; API Routes Found Unauthenticated (Claude / Anthropic)
 **Status:** `Agent Reviewed`
-**Reviewed by:** Antigravity (Gemini 3.1 Pro)
-**Scope:** Localhost setup and UI testing for Kora
+**Reviewed by:** Claude (Anthropic)
+**Scope:** Recorded the key rotation and audited what the new key is exposed to. Documentation only — no app code changed.
 
 #### Key Decisions
-1. **Environment Config:** Confirmed `npm run dev` starts correctly in the repository with no build blockers.
-2. **Visual Check:** Validated the live rendering of the Chat Interface and Visual Speech Lab component screens.
-3. **Progress Tracking:** Screenshots captured and committed to `AI_CHANGELOG.md` to establish visual baseline for upcoming design sprints.
+1. **New Gemini key is set in Vercel** (Ali, 2026-11-16). Two things remain open and are tracked on Sprint 6 task 0: a Vercel environment-variable change only applies to a *new* deployment, so a redeploy is needed if one has not run since; and nobody has yet confirmed a live chat reply. The blocker stays amber until a real reply comes back.
+2. **The chat endpoint is already public.** `/api/chat` takes an unauthenticated POST — there is no `middleware.ts`, no token check and no rate limit anywhere under `src/app/api/`. `/api/evaluate-speech` and `/api/generate-script` are the same. The sign-in wall is UI-only; it never protected the key. Anyone who finds the URL can spend the new key's quota, which makes rate limiting a prerequisite rather than a guest-chat detail — now Sprint 6 task 6, ahead of task 4.
+3. **This does not change the leak diagnosis.** Google flags a key as leaked when it finds it published, which points at the git history (see the 2026-11-15 entry), not at endpoint traffic. The open endpoint is a separate, live exposure worth closing regardless.
+4. **The nine review entries before 2026-11-15 moved to `docs/AI-REVIEWS-ARCHIVE.md`**, verbatim and newest-first, with a pointer left in their place. Master.md had grown past the point where tooling could read or rewrite it in one pass, which was already blocking syncs. Nothing was edited or dropped — 3 entries stay here, 9 are in the archive.
+
+#### Implementation Notes
+- Verified by reading `src/app/api/chat/route.ts` and grepping `src/app/api/` for auth, token and rate-limit references: the only match is the word "auth" inside a prompt string.
+- A live `POST` to `https://kora.namka.cloud/api/chat` could not be made from this session — outbound requests to that host are refused by the sandbox proxy. The verification has to be done from Ali's browser.
+- `src/app/api/chat/route.ts` instructs Kora to write clicks as `!`, `|`, `||` with only `ǂ` as a real letter. The *naming* matches the book (ǃ palatal, ǂ alveolar), but three of the four symbols are ASCII stand-ins, which contradicts the real-click-letter decision. Logged in Known Issues, not fixed here.
 
 #### Next Step
-Ali to proceed with targeted minor updates and review.
+Ali confirms a live chat reply, then deletes the old key. Claude Code starts Sprint 6, taking task 6 before task 4.
 
-> 🔁 **Next:** Ali to ratify or shift to a Builder/Design Lead persona via the relevant workflow.
+> 🔁 **Next:** Ali to verify the live reply; Claude Code to start Sprint 6.
 
 ---
 
-### 2026-03-29 — Project Architecture Review (Comet / Perplexity)
-**Status:** `Agent Reviewed` — pending cross-check
-**Reviewed by:** Comet (Perplexity)
-**Scope:** Full review of Kora-Master.md — restructured to align with MACP template standards
+### 2026-11-16 — Hosting Confirmed, PROJECT-SYNC Removed, VPS Migration Agreed (Claude / Anthropic)
+**Status:** `Agent Reviewed`
+**Reviewed by:** Claude (Anthropic)
+**Scope:** Settled where Kora is hosted, deleted a broken generated file, and recorded the decision to self-host. Documentation and repo housekeeping only — no app code changed.
 
 #### Key Decisions
-1. **Kora-Master.md** converted from pure product vision doc → MACP-compliant master file with Status, Current Goal, MACP protocol, and AI Reviews section
-2. **README.md** replaced default Next.js boilerplate with a proper project-specific README referencing Kora-Master.md and Mission Control
-3. Existing product vision, sprint schedule, curriculum map, and tech stack preserved in full — no architectural decisions altered
-4. Document now readable by Mission Control dashboard (Status, Next Step, Blocker, AI Model, Effort, Progress fields present)
+1. **Kora is on Vercel today.** Cloudflare DNS shows `kora.namka.cloud` as a DNS-only CNAME to `4091c3f52d0a90ae.vercel-dns-017.com`. None of the VPS A records (147.93.18.188) cover it. An earlier belief that Vercel was unused traced back to this file, so the docs were the source of the confusion.
+2. **Kora should move to the Hostinger VPS** — Ali's decision. Planned as Sprint 7, after the chat is unblocked.
+3. **`PROJECT-SYNC.json` and `.github/workflows/generate-project-sync.yml` deleted.** The workflow wrote the raw multi-line commit message into a JSON string without escaping, so the committed file has never been valid JSON — anything parsing it fails. It also hardcoded `live_url` and `deploy_target`, rewriting them on every push. Master.md is already the single source of truth and is readable raw.
+
+#### Implementation Notes
+- If Mission Control reads `PROJECT-SYNC.json`, it needs repointing at `Master.md`'s raw URL. Not verified here — that is a different repo.
+- `package.json` pins `next@16.1.6`, not the 14+ this file has claimed since March.
 
 #### Next Step
-Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydration fix + Firestore audio schema.
+Ali rotates the Gemini key in Vercel (Sprint 6 task 0) to restore the chat, then Sprint 7 moves hosting.
 
-> 🔁 **Next:** Claude or Ali to cross-check and mark as `Ratified`.
+> 🔁 **Next:** Ali to rotate the key; Sprint 7 to be scheduled.
+
+---
+
+### 2026-11-15 — Product Review & Sprint 6 Planning (Claude / Anthropic)
+**Status:** `Agent Reviewed` — directions approved by Ali in session
+**Reviewed by:** Claude (Anthropic)
+**Scope:** Reviewed progress against this file, the repo and the live site; brainstormed product direction; brought this file back in line with the code. Documentation only — no code changed.
+
+#### Key Decisions
+1. **Usage signal is zero.** Ali confirmed no one else has signed in; the only data in Firestore is his own. The next milestone is first real users, not more V2 scope.
+2. **Four directions approved (Sprint 6):** public "Hear the four clicks" page, guest chat before sign-in, a refusal log (`knowledge_gaps`), and a golden-set eval.
+3. **Production chat is down.** Google has revoked the Gemini key as leaked (403 `PERMISSION_DENIED`). Rotation is task 0 and blocks everything else.
+4. **Docs corrected to match the code:** model is Gemini 2.5 Flash on `@google/genai`; TTS is dropped in favour of native recordings; grounding is Markdown in Firestore, not PDFs; click table uses the book's naming and real click letters; Known Issues refreshed.
+
+#### Implementation Notes
+- A Google API key (the Firebase web config key) is hardcoded in public git history in `src/lib/firebase.ts` at commits `62e792a` and `3c4089d` (2026-03-05), before config was externalised in `22cff43`. Not confirmed whether production `GEMINI_API_KEY` was that same key; if it was, that is the leak. Either way the new Gemini key should be a separate, API-restricted key, and the Firebase web key should be restricted to the Firebase APIs it needs.
+- `HEAD` contains no hardcoded keys.
+- Last code commit on `main` is 2026-06-25. The Word Cutter upgrade (prompt dated 2026-10-20) and audio-intake schema v2 are not on `main`.
+- `src/scripts/smart_audio_ingestion.ts` still imports the removed `@google/generative-ai` SDK.
+
+#### Next Step
+Ali rotates the key and confirms a live chat reply. Then Claude Code runs Sprint 6 tasks 1–5 as one commit, diff reviewed before push.
+
+> 🔁 **Next:** Ali to rotate the Gemini key; Claude Code to start Sprint 6.
+
+---
+
+### 📚 Older entries
+
+The nine entries before 2026-11-15 (Sprints 1–5, the audio pipeline work, and the 2026-03/04 reviews) live in [`docs/AI-REVIEWS-ARCHIVE.md`](docs/AI-REVIEWS-ARCHIVE.md), moved there on 2026-11-16 to keep this file readable. Their decisions still stand — read the archive before re-architecting anything they cover.
 
 ---
 
@@ -599,12 +503,12 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ### Project Metadata (read by Mission Control Dashboard)
 
-- **Status:** Active — Sprints 1–5 complete, pending push to `main`
-- **Next Step:** Ali to ratify Sprint 5 and approve push to `main`
-- **Blocker:** None
+- **Status:** Active — MVP built (Sprints 1–5); new Gemini key set, awaiting live verification
+- **Next Step:** Confirm a live chat reply, then Sprint 6 (Unblock & Open), then Sprint 7 (VPS migration)
+- **Blocker:** None confirmed — key rotation pending live verification
 - **AI Model:** Claude Code (execution) / Claude, Comet (Perplexity) (review)
 - **Effort:** M
-- **Progress:** 6 of 7 sprints complete (including 4b)
+- **Progress:** Sprints 1–5 complete (including 4b); Sprints 6–7 planned
 
 ---
 
@@ -630,12 +534,27 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 | 2026-06-22 | Community affiliation field is fully optional, free-text only, never gates a feature, and prompts at most once per user | Wanted signal on who the community is, without adding friction or implying any feature requires answering | Ali + Claude Code |
 | 2026-06-22 | `communityAffiliation` field-level security relies on the existing `users/{userId}` document-owner rule rather than a new rule | Firestore has no field-level security rules; document-level owner gating already satisfies "owner only" for any field on that doc | Claude Code |
 | 2026-06-23 | Added a minimum bar-height floor to the chat audio waveform renderer, on top of the existing (already-correct) normalize/color settings | Short click recordings stay a narrow spike even fully normalized; verified the settings weren't the bug before changing anything | Ali + Claude Code |
+| 2026-11-15 | Next milestone is first real users; Sprint 6 = key rotation, friendly errors, golden-set eval, public "Hear the four clicks" page, guest chat, refusal log | No one but Ali has signed in, so there is no signal to act on; the sign-in wall and an empty signed-out page give a visitor nothing to try | Ali + Claude |
+| 2026-11-15 | Click naming follows the source book: ǃ = palatal, ǂ = alveolar, written with real click letters | Consistency with *Leer jouself Nama*, the grounding source | Ali |
+| 2026-11-16 | Hosting confirmed as Vercel today; kora.namka.cloud is the public URL | Cloudflare DNS shows `kora` as a CNAME to `vercel-dns-017.com` | Ali + Claude |
+| 2026-11-16 | Move Kora off Vercel onto the Hostinger VPS (Docker behind nginx) — Sprint 7, after the chat is unblocked | Ali self-hosts his other apps there and wants Kora with them | Ali |
+| 2026-11-16 | Move AI Review entries older than 2026-11-15 into `docs/AI-REVIEWS-ARCHIVE.md`; keep the three most recent in Master.md | Master.md had grown too large for tooling to read or rewrite in one pass, blocking syncs; the history is still worth keeping | Ali + Claude |
+| 2026-11-16 | New Gemini key issued from AI Studio on `nama-language` and set in Vercel; old key to be deleted once a live reply is confirmed | The old key was revoked by Google as leaked, taking the chat down | Ali |
+| 2026-11-16 | Rate-limit and origin-check the API routes before opening guest chat (Sprint 6 task 6, ahead of task 4) | The routes are already unauthenticated, so the new key's quota is spendable by anyone who finds the URL | Ali + Claude |
+| 2026-11-16 | Delete `PROJECT-SYNC.json` and its workflow | The generated file has never been valid JSON (unescaped commit message) and hardcoded stale hosting values; Master.md is already the source of truth | Ali + Claude |
+| 2026-11-15 | Audio is published to learners only after a listening check | "Native audio is sacred" — a mislabelled click on a public page is worse than no page | Ali + Claude |
 
 ### Known Issues
-- React hydration mismatch warnings in current build — **Sprint 1**
-- Gemini 400 errors — model version needs upgrade — **Sprint 1**
-- PDF-grounded grammar injection wiring unverified in live chat calls — **Sprint 1**
-- Firebase Storage CORS / 403 issues on some audio files — affects V2 (Speech Lab/audio pipeline), not MVP chat; revisit when Speech Lab work resumes
+- 🟠 **`/api/chat`, `/api/evaluate-speech` and `/api/generate-script` accept unauthenticated POSTs** — no middleware, no token check, no rate limit; the sign-in wall is UI-only and never protected the key. Fix: Sprint 6 task 6
+- 🟡 **Gemini key rotation not yet verified end-to-end** — new key set in Vercel 2026-11-16; still to do: redeploy (if not already triggered), confirm a live reply, delete the old key. Fix: Sprint 6 task 0
+- **Kora's system prompt uses ASCII click stand-ins** (`!`, `|`, `||`, with only `ǂ` as a real letter) in `src/app/api/chat/route.ts`, so Kora teaches them to learners — contradicts the real-click-letter decision (ǀ ǁ ǂ ǃ). Naming itself is correct per the book
+- **Raw API error JSON is shown to the user** in the chat bubble — Sprint 6 task 1
+- **A Google API key is in public git history** (`src/lib/firebase.ts`, commits `62e792a` / `3c4089d`). Restrict or rotate it in Google Cloud Console; rewriting history does not un-leak it
+- **Sprint 1's 20-turn smoke test was never run** — superseded by the golden-set eval (Sprint 6 task 2)
+- **Low recording volume on some native clips** — content issue, logged for re-recording / loudness normalisation
+- **Firebase Storage CORS / 403 on some audio files** — affects Speech Lab / audio pipeline; audit before any audio intake
+- `src/scripts/smart_audio_ingestion.ts` still imports the removed `@google/generative-ai` SDK
+- *Resolved in Sprint 1:* hydration warnings, Gemini 400 errors, grounding wiring
 
 ### Future Enhancements
 - Community voice recording portal (families contribute audio)
@@ -647,8 +566,9 @@ Ali or another agent to cross-check restructuring. Begin Sprint 1 tasks: hydrati
 
 ## 🔗 Quick Links
 - **Repo:** [https://github.com/AliMora83/Kora-Tutor](https://github.com/AliMora83/Kora-Tutor)
-- **Live URL:** [https://kora-tutor.vercel.app/](https://kora-tutor.vercel.app/)
+- **Live URL:** [https://kora.namka.cloud/](https://kora.namka.cloud/)
 - **Mission Control:** [https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md](https://github.com/AliMora83/Namka-Mission-Control/blob/main/Master.md)
+- **AI Reviews Archive:** `docs/AI-REVIEWS-ARCHIVE.md` (entries before 2026-11-15)
 - **Lesson Plans:** `Kora-LessonPlans.md` (V2 reference)
 - **Language Source:** `nama_language_guide.md`
 
@@ -663,8 +583,8 @@ training_audio/
   1-The Lateral click.m4a
   1-The Palatal click.m4a
   2-diphtongs-*.m4a
-  ... (104+ files)
-  # Not consumed by MVP chat — relevant again when Speech Lab (V2) resumes
+  ... (125 files at last listing, Sprint 4b)
+  # Played in MVP chat as native clips (Sprint 4); also the source for the Sprint 6 clicks page
 
 user_recordings/
   {userId}/
@@ -680,12 +600,9 @@ message_feedback/
     timestamp
   # New in MVP Sprint 2 — chat response feedback
 
-pdfs/
-  nama-grammar-guide.pdf
-  click-phonology-reference.pdf
-  vocabulary-glossary.pdf
-  # Grounding source for MVP chat — verify wiring in Sprint 1
 ```
+
+**Grounding source (Firestore, not Storage):** `resources/nama_language_guide` in the named database `nama-language` — the Markdown guide, read by `src/lib/knowledge.ts` and re-seeded with `src/scripts/seed_knowledge.ts`. The `pdfs/` folder previously listed here never existed.
 
 ---
 
@@ -697,4 +614,4 @@ The language doesn't disappear. Kora won't let it.
 
 ---
 
-_Last updated by: Claude (Anthropic) on 2026-06-22_
+_Last updated by: Claude (Anthropic) on 2026-11-16_

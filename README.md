@@ -18,7 +18,7 @@ npm run dev
 ## 🛠️ Stack
 - **Frontend:** Next.js 15 (App Router)
 - **Database/Auth:** Firebase
-- **AI:** Google Gemini 1.5 Flash
+- **AI:** Google Gemini 2.5 Flash
 - **Audio:** Firebase Storage + WaveSurfer.js
 
 ---
